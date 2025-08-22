@@ -34,6 +34,11 @@
 			addLabels: ["👷CI/CD"]
 		}
 	],
+	digest: {
+		branchTopic: "{{{depNameSanitized}}}-digest",
+		commitMessageTopic: "{{depName}}のdigestを",
+		commitMessageExtra: "{{newDigestShort}}に更新"
+	},
 	replacement: {
 		branchTopic: "{{{depNameSanitized}}}-replacement",
 		commitMessageExtra: "{{newName}} {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{#if isSingleVersion}}{{{prettyNewVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}に置き換え",
