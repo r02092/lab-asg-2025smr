@@ -1,0 +1,45 @@
+{
+	$schema: "https://docs.renovatebot.com/renovate-schema.json",
+	extends: [
+		"config:recommended",
+		":disableDependencyDashboard",
+		":semanticCommitsDisabled"
+	],
+	timezone: "Asia/Tokyo",
+	baseBranchPatterns: ["develop"],
+	commitMessageAction: null,
+	commitMessageTopic: "{{depName}}を",
+	commitMessageExtra: "{{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}{{prettyNewMajor}}{{else}}{{#if isSingleVersion}}{{prettyNewVersion}}{{else}}{{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}{{/if}}{{/if}}{{/if}}に更新",
+	labels: ["🆙依存関係"],
+	prBodyColumns: ["パッケージ", "種別", "更新", "変更", "保留"],
+	prBodyDefinitions: {
+		パッケージ: "{{{depNameLinked}}}{{#if newName}}{{#unless (equals depName newName)}} → {{{newNameLinked}}}{{/unless}}{{/if}}",
+		種別: "{{{depType}}}",
+		更新: "{{{updateType}}}",
+		変更: "`{{{displayFrom}}}` → `{{{displayTo}}}`",
+		保留: "{{{displayPending}}}"
+	},
+	prFooter: "このPull Requestは[Renovate Bot](https://github.com/renovatebot/renovate)によって自動で生成されました。",
+	packageRules: [
+		{
+			matchManagers: ["npm"],
+			addLabels: ["💻フロントエンド"]
+		},
+		{
+			matchManagers: ["composer"],
+			addLabels: ["🫀バックエンド"]
+		},
+		{
+			matchManagers: ["github-actions"],
+			addLabels: ["👷CI/CD"]
+		}
+	],
+	replacement: {
+		branchTopic: "{{{depNameSanitized}}}-replacement",
+		commitMessageExtra: "{{newName}} {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{#if isSingleVersion}}{{{prettyNewVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}に置き換え",
+		prBodyNotes: [
+			"これはコミュニティが提案した最小限の安定した代替バージョンに`{{{depName}}}`を置き換える特別なPull Requestです。"
+		]
+	},
+	"configMigration": true
+}
