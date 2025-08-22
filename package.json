@@ -1,9 +1,17 @@
 {
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "prettier": "^3.6.2"
+  },
+  "lint-staged": {
+    "*": "npx prettier --ignore-unknown --write"
   },
   "prettier": {
     "arrowParens": "avoid",
     "bracketSpacing": false
+  },
+  "scripts": {
+    "prepare": "husky"
   }
 }
