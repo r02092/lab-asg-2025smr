@@ -36,11 +36,13 @@
 	],
 	digest: {
 		branchTopic: "{{{depNameSanitized}}}-digest",
-		commitMessageTopic: "{{depName}}のdigestを{{newDigestShort}}に更新"
+		commitMessageTopic: "{{depName}}のdigestを{{newDigestShort}}に更新",
+		commitMessageExtra: null
 	},
 	replacement: {
 		branchTopic: "{{{depNameSanitized}}}-replacement",
 		commitMessageTopic: "{{depName}}を{{newName}} {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{#if isSingleVersion}}{{{prettyNewVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}に置き換え",
+		commitMessageExtra: null,
 		prBodyNotes: [
 			"これはコミュニティが提案した最小限の安定した代替バージョンに`{{{depName}}}`を置き換える特別なPull Requestです。"
 		]
