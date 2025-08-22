@@ -8,8 +8,8 @@
 	timezone: "Asia/Tokyo",
 	baseBranchPatterns: ["develop"],
 	commitMessageAction: null,
-	commitMessageTopic: "{{depName}}を",
-	commitMessageExtra: "{{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}{{prettyNewMajor}}{{else}}{{#if isSingleVersion}}{{prettyNewVersion}}{{else}}{{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}{{/if}}{{/if}}{{/if}}に更新",
+	commitMessageTopic: "{{depName}}を{{#if isPinDigest}}{{{newDigestShort}}}{{else}}{{#if isMajor}}{{prettyNewMajor}}{{else}}{{#if isSingleVersion}}{{prettyNewVersion}}{{else}}{{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}{{/if}}{{/if}}{{/if}}に更新",
+	commitMessageExtra: null,
 	labels: ["🆙依存関係"],
 	prBodyColumns: ["パッケージ", "種別", "更新", "変更", "保留"],
 	prBodyDefinitions: {
@@ -36,12 +36,11 @@
 	],
 	digest: {
 		branchTopic: "{{{depNameSanitized}}}-digest",
-		commitMessageTopic: "{{depName}}のdigestを",
-		commitMessageExtra: "{{newDigestShort}}に更新"
+		commitMessageTopic: "{{depName}}のdigestを{{newDigestShort}}に更新"
 	},
 	replacement: {
 		branchTopic: "{{{depNameSanitized}}}-replacement",
-		commitMessageExtra: "{{newName}} {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{#if isSingleVersion}}{{{prettyNewVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}に置き換え",
+		commitMessageTopic: "{{depName}}を{{newName}} {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{#if isSingleVersion}}{{{prettyNewVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}}に置き換え",
 		prBodyNotes: [
 			"これはコミュニティが提案した最小限の安定した代替バージョンに`{{{depName}}}`を置き換える特別なPull Requestです。"
 		]
