@@ -3,7 +3,7 @@
 	extends: [
 		"config:recommended",
 		":disableDependencyDashboard",
-		":semanticCommitsDisabled"
+		":semanticCommitsDisabled",
 	],
 	timezone: "Asia/Tokyo",
 	baseBranchPatterns: ["develop"],
@@ -17,33 +17,33 @@
 		種別: "{{{depType}}}",
 		更新: "{{{updateType}}}",
 		変更: "`{{{displayFrom}}}` → `{{{displayTo}}}`",
-		保留: "{{{displayPending}}}"
+		保留: "{{{displayPending}}}",
 	},
 	prFooter: "このPull Requestは[Renovate Bot](https://github.com/renovatebot/renovate)によって自動で生成されました。",
 	packageRules: [
 		{
 			matchManagers: ["npm"],
-			addLabels: ["💻フロントエンド"]
+			addLabels: ["💻フロントエンド"],
 		},
 		{
 			matchManagers: ["composer"],
-			addLabels: ["🫀バックエンド"]
+			addLabels: ["🫀バックエンド"],
 		},
 		{
 			matchManagers: ["github-actions"],
-			addLabels: ["👷CI/CD"]
-		}
+			addLabels: ["👷CI/CD"],
+		},
 	],
 	digest: {
 		branchTopic: "{{{depNameSanitized}}}-digest",
-		commitMessageExtra: "を {{newDigestShort}} に更新"
+		commitMessageExtra: "を {{newDigestShort}} に更新",
 	},
 	replacement: {
 		branchTopic: "{{{depNameSanitized}}}-replacement",
 		commitMessageExtra: "を {{newName}} {{#if isMajor}}{{{prettyNewMajor}}}{{else}}{{#if isSingleVersion}}{{{prettyNewVersion}}}{{else}}{{{newValue}}}{{/if}}{{/if}} に置き換え",
 		prBodyNotes: [
-			"これはコミュニティが提案した最小限の安定した代替バージョンに`{{{depName}}}`を置き換える特別なPull Requestです。"
-		]
+			"これはコミュニティが提案した最小限の安定した代替バージョンに`{{{depName}}}`を置き換える特別なPull Requestです。",
+		],
 	},
-	"configMigration": true
+	configMigration: true,
 }

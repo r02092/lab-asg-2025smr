@@ -1,3 +1,4 @@
 !.vscode/
 .gemini/
+node_modules/
 gha-creds-*.json
