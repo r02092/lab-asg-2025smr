@@ -1,0 +1,62 @@
+repository:
+  name: lab-asg-2025smr
+  description: 2025年夏課題
+  private: true
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_downloads: true
+  default_branch: develop
+  allow_squash_merge: false
+  allow_merge_commit: true
+  allow_rebase_merge: false
+  delete_branch_on_merge: true
+  enable_automated_security_fixes: false
+  enable_vulnerability_alerts: false
+labels:
+  - name: ✨機能追加
+    color: A2EEEF
+    description: 新しい機能の要望
+  - name: 🆙依存関係
+    color: 0366D6
+    description: 依存関係を更新するPull Request
+  - name: 🐛バグ
+    color: D73A4A
+    description: 意図しない動作
+  - name: 👯重複
+    color: CFD3D7
+    description: 似たIssueやPull Requestがある
+  - name: 👷CI/CD
+    color: 008672
+    description: GitHub ActionsなどのCI/CDに関連
+  - name: 💬質問
+    color: D876E3
+    description: プログラムや環境構築に関する質問
+  - name: 💻フロントエンド
+    color: F7DF1E
+    description: JavaScriptやCSSなどのフロントエンドに関連
+  - name: 📝文書
+    color: 0075CA
+    description: 文書に改善や追加が必要
+  - name: 🫀バックエンド
+    color: 4F5B93
+    description: PHPなどのバックエンドに関連
+milestones:
+  - title: milestone-title
+    description: milestone-description
+    state: open
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews: null
+      required_status_checks: null
+      enforce_admins: true
+      required_linear_history: false
+      restrictions: null
+  - name: develop
+    protection:
+      required_pull_request_reviews: null
+      required_status_checks: null
+      enforce_admins: true
+      required_linear_history: false
+      restrictions: null
