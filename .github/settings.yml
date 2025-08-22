@@ -45,18 +45,3 @@ milestones:
   - title: milestone-title
     description: milestone-description
     state: open
-branches:
-  - name: main
-    protection:
-      required_pull_request_reviews: null
-      required_status_checks: null
-      enforce_admins: true
-      required_linear_history: false
-      restrictions: null
-  - name: develop
-    protection:
-      required_pull_request_reviews: null
-      required_status_checks: null
-      enforce_admins: true
-      required_linear_history: false
-      restrictions: null
