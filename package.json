@@ -32,5 +32,8 @@
   "scripts": {
     "prepare": "husky",
     "review": "npx tsx src/ci/reviewdog.ts"
+  },
+  "dependencies": {
+    "maplibre-gl": "^5.6.2"
   }
 }
