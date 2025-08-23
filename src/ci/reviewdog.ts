@@ -36,7 +36,7 @@ import {spawn} from "child_process";
 		}),
 	);
 	const reviewdog = spawn(
-		"reviewdog",
+		(process.env.GITHUB_ACTIONS ? "./" : "") + "reviewdog",
 		["-f=rdjson"].concat(
 			process.env.GITHUB_ACTIONS
 				? ["-reporter=github-pr-review", "-fail-on-error"]
