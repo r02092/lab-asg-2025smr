@@ -1,4 +1,5 @@
 import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import {useGsiTerrainSource} from "maplibre-gl-gsi-terrain";
 const map = new maplibregl.Map({
 	container: "map",
