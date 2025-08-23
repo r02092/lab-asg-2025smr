@@ -9,47 +9,31 @@ import {spawn} from "child_process";
 		),
 	);
 	result.diagnostics = await Promise.all(
-		result.diagnostics.map(
-			async (d: {
-				message: string;
-				location: {
-					path: string;
-					range: {
-						start: {line: number; column: number};
-						end: {line: number; column: number};
-					};
-				};
-				severity: string;
-				code: {value: string; url: string};
-				original_output: string;
-			}) => {
-				d.message +=
-					(process.env.GITHUB_ACTIONS ? "\n**日本語訳**: " : "\n日本語訳: ") +
-					(await (
-						await fetch(
-							"https://script.google.com/macros/s/AKfycbyhf7DYTLazRge-LQaBw_6S656frZyz0gBCqQB_Hkf_zQsjHvl2hdqDgQtiypjLP3Fv/exec?t=" +
-								encodeURIComponent(d.message),
-						)
-					).text());
-				d.location.path = d.location.path
-					.replace(process.cwd(), "")
-					.replace(/\\/g, "/")
-					.replace(/^\//, "");
-				d.original_output =
-					d.location.path +
-					":" +
-					d.location.range.start.line +
-					":" +
-					d.location.range.start.column +
-					"\n" +
-					(process.env.GITHUB_ACTIONS
-						? d.severity
-						: d.severity.padEnd(9, " ")) +
-					" " +
-					d.message;
-				return d;
-			},
-		),
+		result.diagnostics.map(async (d: any) => {
+			d.message +=
+				(process.env.GITHUB_ACTIONS ? "\n**日本語訳**: " : "\n日本語訳: ") +
+				(await (
+					await fetch(
+						"https://script.google.com/macros/s/AKfycbyhf7DYTLazRge-LQaBw_6S656frZyz0gBCqQB_Hkf_zQsjHvl2hdqDgQtiypjLP3Fv/exec?t=" +
+							encodeURIComponent(d.message),
+					)
+				).text());
+			d.location.path = d.location.path
+				.replace(process.cwd(), "")
+				.replace(/\\/g, "/")
+				.replace(/^\//, "");
+			d.original_output =
+				d.location.path +
+				":" +
+				d.location.range.start.line +
+				":" +
+				d.location.range.start.column +
+				"\n" +
+				(process.env.GITHUB_ACTIONS ? d.severity : d.severity.padEnd(9, " ")) +
+				" " +
+				d.message;
+			return d;
+		}),
 	);
 	const reviewdog = spawn(
 		(process.env.GITHUB_ACTIONS ? "./" : "") + "reviewdog",
