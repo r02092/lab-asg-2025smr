@@ -49,6 +49,7 @@ import {spawn} from "child_process";
 	reviewdog.stdin.write(JSON.stringify(result));
 	reviewdog.stdin.end();
 	reviewdog.stdout.pipe(process.stdout);
+	reviewdog.stderr.pipe(process.stderr);
 	reviewdog.on("exit", code => {
 		process.exit(code ?? 0);
 	});
