@@ -39,7 +39,7 @@ import {spawn} from "child_process";
 		(process.env.GITHUB_ACTIONS ? "./" : "") + "reviewdog",
 		["-f=rdjson"].concat(
 			process.env.GITHUB_ACTIONS
-				? ["-reporter=github-pr-review", "-fail-level=any"]
+				? ["-reporter=github-pr-review", "-fail-on-error"]
 				: ["-diff=git diff FETCH_HEAD"],
 		),
 		process.env.GITHUB_ACTIONS
