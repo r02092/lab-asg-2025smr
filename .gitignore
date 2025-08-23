@@ -1,6 +1,7 @@
 !.vscode/
 .gemini/
 dist/js/
+gas/main.js
 node_modules/
 .clasp.json
 gha-creds-*.json
