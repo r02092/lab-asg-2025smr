@@ -1,0 +1,11 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"rootDir": "src",
+		"strict": true,
+		"esModuleInterop": true,
+		"moduleResolution": "bundler"
+	}
+}

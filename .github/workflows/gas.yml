@@ -1,0 +1,41 @@
+name: Google Apps Scriptをデプロイ
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/gas.yml"
+      - "gas/**"
+      - "src/ci/gas.ts"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - run: npm i
+      - run: npm i -g @google/clasp
+      - run: |
+          cat << EOF > ~/.clasprc.json
+          {
+            "tokens": {
+              "default": {
+                "client_id": "${{ secrets.GAS_CLIENT_ID }}",
+                "client_secret": "${{ secrets.GAS_CLIENT_SECRET }}",
+                "type": "authorized_user",
+                "refresh_token": "${{ secrets.GAS_REFRESH_TOKEN }}"
+              }
+            }
+          }
+          EOF
+      - run: |
+          cat << EOF > .clasp.json
+          {
+            "scriptId": "${{ secrets.GAS_SCRIPT_ID }}",
+            "rootDir": "gas"
+          }
+          EOF
+      - run: clasp push -f
+      - run: clasp deploy -i AKfycbyhf7DYTLazRge-LQaBw_6S656frZyz0gBCqQB_Hkf_zQsjHvl2hdqDgQtiypjLP3Fv
