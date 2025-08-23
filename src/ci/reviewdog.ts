@@ -43,7 +43,7 @@ import {spawn} from "child_process";
 				: ["-diff=git diff FETCH_HEAD"],
 		),
 		process.env.GITHUB_ACTIONS
-			? {env: {REVIEWDOG_GITHUB_API_TOKEN: process.argv[2]}}
+			? {env: {...process.env, REVIEWDOG_GITHUB_API_TOKEN: process.argv[2]}}
 			: {},
 	);
 	reviewdog.stdin.write(JSON.stringify(result));
