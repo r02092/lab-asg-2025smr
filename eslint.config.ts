@@ -15,6 +15,17 @@ export default defineConfig([
 	},
 	tseslint.configs.recommended,
 	{
+		languageOptions: {
+			parserOptions: {
+				projectService: {
+					allowDefaultProject: ["eslint.config.ts", "webpack.config.ts"],
+				},
+				tsconfigRootDir: import.meta.dirname,
+				project: "tsconfig.json",
+			},
+		},
+	},
+	{
 		files: ["**/*.json"],
 		plugins: {json},
 		language: "json/json",

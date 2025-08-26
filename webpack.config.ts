@@ -1,11 +1,12 @@
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const GasPlugin = require("gas-webpack-plugin");
-module.exports = [
+import * as webpack from "webpack";
+import * as path from "path";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import GasPlugin from "gas-webpack-plugin";
+const config: webpack.Configuration[] = [
 	{
 		entry: "./src/main.ts",
 		output: {
-			path: path.resolve(__dirname, "dist", "js"),
+			path: path.resolve("dist", "js"),
 			filename: "main.js",
 		},
 		resolve: {
@@ -35,7 +36,7 @@ module.exports = [
 	{
 		entry: "./src/ci/gas.ts",
 		output: {
-			path: path.resolve(__dirname, "gas"),
+			path: path.resolve("gas"),
 			filename: "main.js",
 		},
 		resolve: {
@@ -55,3 +56,4 @@ module.exports = [
 		},
 	},
 ];
+export default config;
