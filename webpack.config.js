@@ -1,4 +1,5 @@
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const GasPlugin = require("gas-webpack-plugin");
 module.exports = [
 	{
@@ -16,8 +17,17 @@ module.exports = [
 					test: /\.ts$/,
 					loader: "ts-loader",
 				},
+				{
+					test: /\.css$/,
+					use: [MiniCssExtractPlugin.loader, "css-loader"],
+				},
 			],
 		},
+		plugins: [
+			new MiniCssExtractPlugin({
+				filename: "../css/[name].css",
+			}),
+		],
 		watchOptions: {
 			ignored: /node_modules/,
 		},

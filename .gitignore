@@ -1,5 +1,6 @@
 !.vscode/
 .gemini/
+dist/css/
 dist/js/
 gas/main.js
 node_modules/
