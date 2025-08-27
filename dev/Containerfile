@@ -1,0 +1,34 @@
+FROM php:8.3-fpm-alpine
+RUN <<EOS
+apk --no-cache add apache2 apache2-proxy mariadb mariadb-client
+cat <<-EOF > /etc/apache2/conf.d/php.conf
+	AddType text/html .php
+	DirectoryIndex index.php
+	<LocationMatch \.php\$>
+		SetHandler "proxy:unix:/run/php-fpm.sock|fcgi://localhost"
+	</LocationMatch>
+	EOF
+cat <<-EOF > /usr/local/etc/php-fpm.d/zzz.conf
+	listen = /run/php-fpm.sock
+	listen.owner = apache
+	EOF
+cat <<-EOF > entrypoint.sh
+	test -d /var/lib/mysql/sys
+	db_setup=\$?
+	if [ "\$db_setup" = 1 ]; then
+		mariadb-install-db --datadir=/var/lib/mysql --user=mysql
+	fi
+	mariadbd-safe &
+	if [ "\$db_setup" = 1 ]; then
+		while ! mariadb -e 'SELECT 1;'; do
+			sleep 1;
+		done
+		mariadb -e 'CREATE DATABASE test_db;
+			GRANT ALL PRIVILEGES ON test_db.* TO test_user@localhost IDENTIFIED BY "test_pass";'
+	fi
+	httpd -DFOREGROUND & php-fpm & wait
+	EOF
+docker-php-ext-install pdo_mysql
+echo 'pdo_mysql.default_socket=/run/mysqld/mysqld.sock' > /usr/local/etc/php/php.ini
+EOS
+ENTRYPOINT ["sh", "entrypoint.sh"]

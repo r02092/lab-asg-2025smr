@@ -1,5 +1,7 @@
-!.vscode/
 .gemini/
+!.vscode/
+dev/db/*
+!dev/db/.gitkeep
 dist/css/
 dist/js/
 gas/main.js
