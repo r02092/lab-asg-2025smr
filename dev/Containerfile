@@ -24,8 +24,8 @@ cat <<-EOF > entrypoint.sh
 		while ! mariadb -e 'SELECT 1;'; do
 			sleep 1;
 		done
-		mariadb -e 'CREATE DATABASE test_db;
-			GRANT ALL PRIVILEGES ON test_db.* TO test_user@localhost IDENTIFIED BY "test_pass";'
+		mariadb -e 'CREATE DATABASE dev_db;
+			GRANT ALL PRIVILEGES ON dev_db.* TO dev_user@localhost IDENTIFIED BY "dev_pass";'
 	fi
 	httpd -DFOREGROUND & php-fpm83 & wait
 	EOF
