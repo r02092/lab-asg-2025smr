@@ -1,6 +1,7 @@
-FROM php:8.3-fpm-alpine
+FROM alpine
 RUN <<EOS
-apk --no-cache add apache2 apache2-proxy mariadb mariadb-client
+echo https://dl-cdn.alpinelinux.org/alpine/v3.14/main >> /etc/apk/repositories
+apk --no-cache add apache2 apache2-proxy mariadb=10.5.19-r0 mariadb-client=10.5.19-r0 php83-fpm php83-mbstring php83-pdo php83-pdo_mysql
 cat <<-EOF > /etc/apache2/conf.d/php.conf
 	AddType text/html .php
 	DirectoryIndex index.php
@@ -8,7 +9,7 @@ cat <<-EOF > /etc/apache2/conf.d/php.conf
 		SetHandler "proxy:unix:/run/php-fpm.sock|fcgi://localhost"
 	</LocationMatch>
 	EOF
-cat <<-EOF > /usr/local/etc/php-fpm.d/zzz.conf
+cat <<-EOF > /etc/php83/php-fpm.d/z.conf
 	listen = /run/php-fpm.sock
 	listen.owner = apache
 	EOF
@@ -26,9 +27,7 @@ cat <<-EOF > entrypoint.sh
 		mariadb -e 'CREATE DATABASE test_db;
 			GRANT ALL PRIVILEGES ON test_db.* TO test_user@localhost IDENTIFIED BY "test_pass";'
 	fi
-	httpd -DFOREGROUND & php-fpm & wait
+	httpd -DFOREGROUND & php-fpm83 & wait
 	EOF
-docker-php-ext-install pdo_mysql
-echo 'pdo_mysql.default_socket=/run/mysqld/mysqld.sock' > /usr/local/etc/php/php.ini
 EOS
 ENTRYPOINT ["sh", "entrypoint.sh"]
