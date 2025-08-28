@@ -14,7 +14,7 @@ cat <<-EOF > /etc/php83/php-fpm.d/z.conf
 	listen.owner = apache
 	EOF
 cat <<-EOF > entrypoint.sh
-	test -d /var/lib/mysql/sys
+	test -d /var/lib/mysql/mysql
 	db_setup=\$?
 	if [ "\$db_setup" = 1 ]; then
 		mariadb-install-db --datadir=/var/lib/mysql --user=mysql
