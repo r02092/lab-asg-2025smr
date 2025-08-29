@@ -1,0 +1,9 @@
+services:
+  app:
+    build: dev
+    image: docker.io/haruhi913/lamp
+    ports:
+      - 8080:80
+    volumes:
+      - ./dist:/var/www/localhost/htdocs:z
+      - ./dev/db:/var/lib/mysql:z
