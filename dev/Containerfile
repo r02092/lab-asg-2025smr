@@ -13,7 +13,7 @@ cat <<-EOF > /etc/php83/php-fpm.d/z.conf
 	listen = /run/php-fpm.sock
 	listen.owner = apache
 	EOF
-cat <<-EOF > entrypoint.sh
+cat <<-EOF > ~/entrypoint.sh
 	test -d /var/lib/mysql/mysql
 	db_setup=\$?
 	if [ "\$db_setup" = 1 ]; then
@@ -29,5 +29,7 @@ cat <<-EOF > entrypoint.sh
 	fi
 	httpd -DFOREGROUND & php-fpm83 & wait
 	EOF
+sed -i s!var/www/localhost/htdocs!mnt/repo/dist!g /etc/apache2/httpd.conf
 EOS
-ENTRYPOINT ["sh", "entrypoint.sh"]
+WORKDIR /mnt/repo
+ENTRYPOINT ["sh", "/root/entrypoint.sh"]
