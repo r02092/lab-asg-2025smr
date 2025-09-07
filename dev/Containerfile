@@ -1,7 +1,7 @@
 FROM alpine
 RUN <<EOS
 echo https://dl-cdn.alpinelinux.org/alpine/v3.14/main >> /etc/apk/repositories
-apk --no-cache add apache2 apache2-proxy composer git mariadb=10.5.19-r0 mariadb-client=10.5.19-r0 php83-fpm php83-pdo_mysql
+apk --no-cache add apache2 apache2-proxy composer git mariadb=10.5.19-r0 mariadb-client=10.5.19-r0 php83-fpm php83-pdo_mysql php83-tokenizer
 cat <<-EOF > /etc/apache2/conf.d/php.conf
 	AddType text/html .php
 	DirectoryIndex index.php

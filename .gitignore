@@ -6,5 +6,6 @@ dist/css/
 dist/js/
 gas/main.js
 node_modules/
+vendor/
 .clasp.json
 gha-creds-*.json
