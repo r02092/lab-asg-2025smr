@@ -62,6 +62,7 @@ async function processDiagnostics(
 			? []
 			: podmanArgs.concat("vendor/bin/phpstan")
 		).concat(["analyse", "--error-format=raw", "--no-progress"]),
+		{stdio: ["pipe", "pipe", "inherit"]},
 	);
 	let dataCnt = 0;
 	phpstan.stdout.on("data", data => {
@@ -87,7 +88,6 @@ async function processDiagnostics(
 			dataCnt--;
 		});
 	});
-	phpstan.stderr.pipe(process.stderr);
 	await new Promise<void>(resolve => {
 		phpstan.on("exit", () => {
 			resolve();
@@ -103,14 +103,15 @@ async function processDiagnostics(
 					"-f=rdjson",
 					"-diff=git diff FETCH_HEAD",
 				]),
-		process.env.GITHUB_ACTIONS
-			? {env: {...process.env, REVIEWDOG_GITHUB_API_TOKEN: process.argv[2]}}
-			: {},
+		{
+			...(process.env.GITHUB_ACTIONS
+				? {env: {...process.env, REVIEWDOG_GITHUB_API_TOKEN: process.argv[2]}}
+				: {}),
+			stdio: ["pipe", "inherit", "inherit"],
+		},
 	);
 	reviewdog.stdin.write(JSON.stringify({diagnostics: diagnostics}));
 	reviewdog.stdin.end();
-	reviewdog.stdout.pipe(process.stdout);
-	reviewdog.stderr.pipe(process.stderr);
 	reviewdog.on("exit", code => {
 		process.exit(code ?? 0);
 	});
