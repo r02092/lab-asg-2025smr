@@ -1,6 +1,7 @@
 {
 	"recommendations": [
 		"EditorConfig.EditorConfig",
+		"SanderRonde.phpstan-vscode",
 		"dbaeumer.vscode-eslint",
 		"esbenp.prettier-vscode"
 	]
