@@ -8,6 +8,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+      - run: composer install
       - run: curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh | sh -s -- -b . v0.18.1
       - run: npm i
       - run: npx tsx src/ci/reviewdog.ts ${{ secrets.GITHUB_TOKEN }}
