@@ -1,5 +1,7 @@
 import {ESLint} from "eslint";
 import {spawn} from "child_process";
+import {MLEngine} from "markuplint";
+import {globSync} from "glob";
 type RdJsonDiagnostic = {
 	message: string;
 	location: {
@@ -13,49 +15,42 @@ type RdJsonDiagnostic = {
 	code?: {value: string; url: string};
 	original_output: string;
 };
-async function processDiagnostics(
-	diagnostics: RdJsonDiagnostic[],
-): Promise<RdJsonDiagnostic[]> {
-	return Promise.all(
-		diagnostics.map(async (d: RdJsonDiagnostic) => {
-			d.message +=
-				(process.env.GITHUB_ACTIONS ? "\n**日本語訳**: " : "\n日本語訳: ") +
-				(await (
-					await fetch(
-						"https://script.google.com/macros/s/AKfycbyhf7DYTLazRge-LQaBw_6S656frZyz0gBCqQB_Hkf_zQsjHvl2hdqDgQtiypjLP3Fv/exec?t=" +
-							encodeURIComponent(d.message),
-					)
-				).text());
-			d.location.path = d.location.path
-				.replace("mnt/repo/", "")
-				.replace(process.cwd(), "")
-				.replace(/\\/g, "/")
-				.replace(/^\//, "");
-			d.original_output =
-				d.location.path +
-				":" +
-				d.location.range.start.line +
-				(d.location.range.start.column
-					? ":" + d.location.range.start.column
-					: "") +
-				"\n" +
-				(process.env.GITHUB_ACTIONS ? d.severity : d.severity.padEnd(9, " ")) +
-				" " +
-				d.message;
-			return d;
-		}),
-	);
-}
 (async () => {
 	const podmanArgs = ["exec", "-i", "lab-asg-2025smr_app_1"];
 	const eslint = new ESLint();
 	const formatter = await eslint.loadFormatter("eslint-formatter-rdjson");
-	const result = JSON.parse(
+	const diagnostics = JSON.parse(
 		await formatter.format(
 			await eslint.lintFiles(["**/*.{js,ts,json{,5},md,css}"]),
 		),
-	);
-	const diagnostics = await processDiagnostics(result.diagnostics);
+	).diagnostics;
+	for (const i of globSync("dist/**/*.html")) {
+		const file = await MLEngine.toMLFile(i.replace(/\\/g, "/"));
+		if (!file) throw new Error("ファイルが見つかりません");
+		const engine = new MLEngine(file);
+		const result = await engine.exec();
+		if (result === null) throw new Error("解析に失敗しました");
+		result.violations.map(v => {
+			diagnostics.push({
+				message: v.message,
+				location: {
+					path: i,
+					range: {
+						start: {line: v.line, column: v.col},
+						end: v.raw
+							? {line: v.line, column: v.col + v.raw.length}
+							: undefined,
+					},
+				},
+				severity: v.severity.toUpperCase(),
+				code: {
+					value: v.ruleId,
+					url: "https://markuplint.dev/ja/docs/rules/" + v.ruleId,
+				},
+				original_output: JSON.stringify(v),
+			});
+		});
+	}
 	const phpstan = spawn(
 		process.env.GITHUB_ACTIONS ? "vendor/bin/phpstan" : "podman",
 		(process.env.GITHUB_ACTIONS
@@ -83,10 +78,8 @@ async function processDiagnostics(
 					original_output: l,
 				});
 		}
-		processDiagnostics(PsDiagnostics).then(ds => {
-			diagnostics.push(...ds);
-			dataCnt--;
-		});
+		diagnostics.push(...PsDiagnostics);
+		dataCnt--;
 	});
 	await new Promise<void>(resolve => {
 		phpstan.on("exit", () => {
@@ -110,7 +103,45 @@ async function processDiagnostics(
 			stdio: ["pipe", "inherit", "inherit"],
 		},
 	);
-	reviewdog.stdin.write(JSON.stringify({diagnostics: diagnostics}));
+	reviewdog.stdin.write(
+		JSON.stringify({
+			diagnostics: await Promise.all(
+				diagnostics.map(async (d: RdJsonDiagnostic) => {
+					if (!d.code || !d.code.url.startsWith("https://markuplint.dev/")) {
+						d.message +=
+							(process.env.GITHUB_ACTIONS
+								? "\n**日本語訳**: "
+								: "\n日本語訳: ") +
+							(await (
+								await fetch(
+									"https://script.google.com/macros/s/AKfycbyhf7DYTLazRge-LQaBw_6S656frZyz0gBCqQB_Hkf_zQsjHvl2hdqDgQtiypjLP3Fv/exec?t=" +
+										encodeURIComponent(d.message),
+								)
+							).text());
+					}
+					d.location.path = d.location.path
+						.replace("mnt/repo/", "")
+						.replace(process.cwd(), "")
+						.replace(/\\/g, "/")
+						.replace(/^\//, "");
+					d.original_output =
+						d.location.path +
+						":" +
+						d.location.range.start.line +
+						(d.location.range.start.column
+							? ":" + d.location.range.start.column
+							: "") +
+						"\n" +
+						(process.env.GITHUB_ACTIONS
+							? d.severity
+							: d.severity.padEnd(9, " ")) +
+						" " +
+						d.message;
+					return d;
+				}),
+			),
+		}),
+	);
 	reviewdog.stdin.end();
 	reviewdog.on("exit", code => {
 		process.exit(code ?? 0);
