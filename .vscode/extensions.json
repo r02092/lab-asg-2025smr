@@ -3,6 +3,7 @@
 		"EditorConfig.EditorConfig",
 		"SanderRonde.phpstan-vscode",
 		"dbaeumer.vscode-eslint",
-		"esbenp.prettier-vscode"
+		"esbenp.prettier-vscode",
+		"yusukehirao.vscode-markuplint"
 	]
 }
