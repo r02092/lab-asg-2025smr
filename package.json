@@ -13,6 +13,7 @@
     "@types/webpack": "^5.28.5",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
+    "cross-env": "^10.0.0",
     "css-loader": "^7.1.2",
     "eslint": "^9.34.0",
     "eslint-formatter-rdjson": "^1.0.6",
@@ -50,6 +51,7 @@
     "bracketSpacing": false
   },
   "scripts": {
+    "build": "cross-env NODE_OPTIONS=\"--loader ts-node/esm\" webpack --mode production",
     "prepare": "husky",
     "review": "npx tsx src/ci/reviewdog.ts"
   },
