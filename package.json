@@ -53,7 +53,7 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--loader ts-node/esm\" webpack --mode production",
     "prepare": "husky",
-    "review": "npx tsx src/ci/reviewdog.ts"
+    "review": "tsx src/ci/reviewdog.ts"
   },
   "type": "module"
 }
