@@ -11,8 +11,8 @@ on:
 
 jobs:
   deploy:
+    name: Google Apps Scriptをデプロイ
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
       - run: npm i
@@ -22,10 +22,10 @@ jobs:
           {
             "tokens": {
               "default": {
-                "client_id": "${{ secrets.GAS_CLIENT_ID }}",
-                "client_secret": "${{ secrets.GAS_CLIENT_SECRET }}",
+                "client_id": "${{secrets.GAS_CLIENT_ID}}",
+                "client_secret": "${{secrets.GAS_CLIENT_SECRET}}",
                 "type": "authorized_user",
-                "refresh_token": "${{ secrets.GAS_REFRESH_TOKEN }}"
+                "refresh_token": "${{secrets.GAS_REFRESH_TOKEN}}"
               }
             }
           }
@@ -33,7 +33,7 @@ jobs:
       - run: |
           cat << EOF > .clasp.json
           {
-            "scriptId": "${{ secrets.GAS_SCRIPT_ID }}",
+            "scriptId": "${{secrets.GAS_SCRIPT_ID}}",
             "rootDir": "gas"
           }
           EOF

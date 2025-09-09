@@ -1,0 +1,26 @@
+name: Pull Requestの自動確認
+
+on: [pull_request]
+
+jobs:
+  prettier:
+    name: Prettierによる自動整形
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: technote-space/get-diff-action@v6
+      - run: npm i
+      - run: npx prettier --ignore-unknown --write ${{env.GIT_DIFF}}
+        if: env.GIT_DIFF
+      - uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: Prettierによる整形を適用
+  review:
+    name: Reviewdogによる自動レビュー
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: composer install
+      - run: curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh | sh -s -- -b . v0.18.1
+      - run: npm i
+      - run: npx tsx src/ci/reviewdog.ts ${{secrets.GITHUB_TOKEN}}
