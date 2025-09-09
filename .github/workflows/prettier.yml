@@ -5,7 +5,6 @@ on: [pull_request]
 jobs:
   prettier:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
       - uses: technote-space/get-diff-action@v6

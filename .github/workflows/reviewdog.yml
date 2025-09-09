@@ -1,11 +1,10 @@
 name: Reviewdogによる自動レビュー
 
-on: ["pull_request"]
+on: [pull_request]
 
 jobs:
   review:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
       - run: composer install
