@@ -3,10 +3,10 @@
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "ESNext",
-		"rootDir": "src",
+		"rootDir": "src/ts",
 		"strict": true,
 		"esModuleInterop": true,
 		"moduleResolution": "bundler"
 	},
-	"include": ["src"]
+	"include": ["src/ts"]
 }

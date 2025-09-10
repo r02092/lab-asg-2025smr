@@ -4,7 +4,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import GasPlugin from "gas-webpack-plugin";
 const config: webpack.Configuration[] = [
 	{
-		entry: "./src/main.ts",
+		entry: "./src/ts/main.ts",
 		output: {
 			path: path.resolve("dist", "js"),
 			filename: "main.js",
@@ -34,7 +34,7 @@ const config: webpack.Configuration[] = [
 		},
 	},
 	{
-		entry: "./src/ci/gas.ts",
+		entry: "./src/ts/ci/gas.ts",
 		output: {
 			path: path.resolve("gas"),
 			filename: "main.js",
