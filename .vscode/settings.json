@@ -1,4 +1,20 @@
 {
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.formatOnSave": true
+	"editor.formatOnSave": true,
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				"match": ".php$",
+				"cmd": "npx prettier ${file} --write"
+			}
+		]
+	},
+	"phpstan.binCommand": [
+		"podman",
+		"exec",
+		"-i",
+		"lab-asg-2025smr_app_1",
+		"vendor/bin/phpstan"
+	],
+	"phpstan.paths": {".": ""}
 }

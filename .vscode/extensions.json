@@ -1,3 +1,10 @@
 {
-	"recommendations": ["EditorConfig.EditorConfig", "esbenp.prettier-vscode"]
+	"recommendations": [
+		"EditorConfig.EditorConfig",
+		"SanderRonde.phpstan-vscode",
+		"dbaeumer.vscode-eslint",
+		"emeraldwalk.runonsave",
+		"esbenp.prettier-vscode",
+		"yusukehirao.vscode-markuplint"
+	]
 }

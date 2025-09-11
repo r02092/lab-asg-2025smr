@@ -1,6 +1,8 @@
-!.vscode/
-.gemini/
-dist/js/
-node_modules/
+!/.vscode/
 .clasp.json
-gha-creds-*.json
+.env
+/.phpunit.result.cache
+/node_modules/
+/public/build/
+/public/hot
+/vendor/
