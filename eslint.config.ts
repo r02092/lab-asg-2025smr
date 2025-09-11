@@ -18,7 +18,7 @@ export default defineConfig([
 		languageOptions: {
 			parserOptions: {
 				projectService: {
-					allowDefaultProject: ["eslint.config.ts", "webpack.config.ts"],
+					allowDefaultProject: ["eslint.config.ts", "vite.config.ts"],
 				},
 				tsconfigRootDir: import.meta.dirname,
 				project: "tsconfig.json",
@@ -49,10 +49,5 @@ export default defineConfig([
 		language: "css/css",
 		extends: ["css/recommended"],
 	},
-	globalIgnores([
-		"dist/**",
-		"gas/**",
-		"package-lock.json",
-		"webpack.config.js",
-	]),
+	globalIgnores(["gas/dist/main.js", "package-lock.json", "public/build/*"]),
 ]);
