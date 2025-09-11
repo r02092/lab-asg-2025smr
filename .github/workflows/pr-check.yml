@@ -27,7 +27,7 @@ jobs:
   phpunit:
     name: PHPUnitによる自動テスト
     runs-on: ubuntu-latest
-    service:
+    services:
       db:
         image: mariadb:10.5
         env:
