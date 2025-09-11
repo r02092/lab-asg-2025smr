@@ -1,1 +1,4 @@
-package-lock.json
+/bootstrap/cache/
+/composer.json
+/package-lock.json
+/storage/

@@ -1,19 +1,9 @@
 FROM alpine
 RUN <<EOS
 echo https://dl-cdn.alpinelinux.org/alpine/v3.14/main >> /etc/apk/repositories
-apk --no-cache add apache2 apache2-proxy composer git mariadb=10.5.19-r0 mariadb-client=10.5.19-r0 php83-fpm php83-pdo_mysql php83-tokenizer
-cat <<-EOF > /etc/apache2/conf.d/php.conf
-	AddType text/html .php
-	DirectoryIndex index.php
-	<LocationMatch \.php\$>
-		SetHandler "proxy:unix:/run/php-fpm.sock|fcgi://localhost"
-	</LocationMatch>
-	EOF
-cat <<-EOF > /etc/php83/php-fpm.d/z.conf
-	listen = /run/php-fpm.sock
-	listen.owner = apache
-	EOF
+apk --no-cache add composer git mariadb=10.5.19-r0 mariadb-client=10.5.19-r0 php83 php83-dom php83-fileinfo php83-pdo_mysql php83-session php83-tokenizer php83-xml php83-xmlwriter
 cat <<-EOF > ~/entrypoint.sh
+	composer install
 	test -d /var/lib/mysql/mysql
 	db_setup=\$?
 	if [ "\$db_setup" = 1 ]; then
@@ -26,12 +16,16 @@ cat <<-EOF > ~/entrypoint.sh
 		done
 		mariadb -e 'CREATE DATABASE dev_db;
 			GRANT ALL PRIVILEGES ON dev_db.* TO dev_user@localhost IDENTIFIED BY "dev_pass";'
+		php artisan migrate
 	fi
-	httpd -DFOREGROUND & php-fpm83 & wait
+	php artisan serve --host=0.0.0.0
 	EOF
-git config --global safe.directory /mnt/repo
-sed -i s!var/www/localhost/htdocs!mnt/repo/dist!g /etc/apache2/httpd.conf
+git config --global safe.directory /workspace
+mkdir -p /workspace/storage/framework/cache/data
+mkdir -p /workspace/storage/framework/sessions
+mkdir -p /workspace/storage/framework/testing
+mkdir -p /workspace/storage/framework/views
 wget -O - https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh | sh -s -- -b /usr/local/bin v0.18.1
 EOS
-WORKDIR /mnt/repo
+WORKDIR /workspace
 ENTRYPOINT ["sh", "/root/entrypoint.sh"]

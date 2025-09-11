@@ -1,6 +1,14 @@
 {
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.formatOnSave": true,
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				"match": ".php$",
+				"cmd": "npx prettier ${file} --write"
+			}
+		]
+	},
 	"phpstan.binCommand": [
 		"podman",
 		"exec",

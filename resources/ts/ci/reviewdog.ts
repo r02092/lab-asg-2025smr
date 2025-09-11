@@ -1,7 +1,6 @@
-import {ESLint} from "eslint";
 import {spawn} from "child_process";
-import {MLEngine} from "markuplint";
-import {globSync} from "glob";
+import fs from "fs";
+import {ESLint} from "eslint";
 type RdJsonDiagnostic = {
 	message: string;
 	location: {
@@ -12,51 +11,35 @@ type RdJsonDiagnostic = {
 		};
 	};
 	severity: string;
-	code?: {value: string; url: string};
+	code: {value: string | null; url: string};
 	original_output: string;
 };
 (async () => {
+	const gitDiff = spawn("git", ["diff", "--name-only", "FETCH_HEAD"], {
+		stdio: ["ignore", "pipe", "inherit"],
+	});
+	const diff = await new Promise<string[]>(resolve => {
+		gitDiff.stdout.on("data", data => {
+			resolve(
+				data
+					.toString()
+					.split("\n")
+					.filter((f: string) => fs.existsSync(f)),
+			);
+		});
+	});
 	const podmanArgs = ["exec", "-i", "lab-asg-2025smr_app_1"];
 	const eslint = new ESLint();
 	const formatter = await eslint.loadFormatter("eslint-formatter-rdjson");
 	const diagnostics = JSON.parse(
-		await formatter.format(
-			await eslint.lintFiles(["**/*.{js,ts,json{,5},md,css}"]),
-		),
-	).diagnostics;
-	for (const i of globSync("dist/**/*.html")) {
-		const file = await MLEngine.toMLFile(i.replace(/\\/g, "/"));
-		if (!file) throw new Error("ファイルが見つかりません");
-		const engine = new MLEngine(file);
-		const result = await engine.exec();
-		if (result === null) throw new Error("解析に失敗しました");
-		result.violations.map(v => {
-			diagnostics.push({
-				message: v.message,
-				location: {
-					path: i,
-					range: {
-						start: {line: v.line, column: v.col},
-						end: v.raw
-							? {line: v.line, column: v.col + v.raw.length}
-							: undefined,
-					},
-				},
-				severity: v.severity.toUpperCase(),
-				code: {
-					value: v.ruleId,
-					url: "https://markuplint.dev/ja/docs/rules/" + v.ruleId,
-				},
-				original_output: JSON.stringify(v),
-			});
-		});
-	}
+		await formatter.format(await eslint.lintFiles(diff)),
+	).diagnostics.filter((d: RdJsonDiagnostic) => d.code.value !== null);
 	const phpstan = spawn(
 		process.env.GITHUB_ACTIONS ? "vendor/bin/phpstan" : "podman",
 		(process.env.GITHUB_ACTIONS
 			? []
 			: podmanArgs.concat("vendor/bin/phpstan")
-		).concat(["analyse", "--error-format=raw", "--no-progress"]),
+		).concat(["analyse", ...diff, "--error-format=raw", "--no-progress"]),
 		{stdio: ["pipe", "pipe", "inherit"]},
 	);
 	let dataCnt = 0;
@@ -75,6 +58,7 @@ type RdJsonDiagnostic = {
 						},
 					},
 					severity: "ERROR",
+					code: {value: null, url: ""},
 					original_output: l,
 				});
 		}

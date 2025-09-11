@@ -7,7 +7,7 @@ on:
     paths:
       - ".github/workflows/gas.yml"
       - "gas/**"
-      - "src/ci/gas.ts"
+      - "src/ts/ci/gas.ts"
 
 jobs:
   deploy:
@@ -17,6 +17,7 @@ jobs:
       - uses: actions/checkout@v5
       - run: npm i
       - run: npm i -g @google/clasp
+      - run: npm run build-gas
       - run: |
           cat << EOF > ~/.clasprc.json
           {
@@ -34,7 +35,7 @@ jobs:
           cat << EOF > .clasp.json
           {
             "scriptId": "${{secrets.GAS_SCRIPT_ID}}",
-            "rootDir": "gas"
+            "rootDir": "gas/dist"
           }
           EOF
       - run: clasp push -f
