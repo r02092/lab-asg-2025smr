@@ -39,8 +39,10 @@ jobs:
           - 3306:3306
     steps:
       - uses: actions/checkout@v5
+      - run: |
+          env=`cat .env.example`
+          echo "${env/DB_HOST=localhost/DB_HOST=127.0.0.1}" > .env
       - run: composer install
-      - run: cp .env.example .env
       - run: |
           mkdir -p storage/framework/cache/data
           mkdir -p storage/framework/sessions
