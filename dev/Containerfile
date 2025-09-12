@@ -18,6 +18,9 @@ cat <<-EOF > ~/entrypoint.sh
 			GRANT ALL PRIVILEGES ON dev_db.* TO dev_user@localhost IDENTIFIED BY "dev_pass";'
 		php artisan migrate
 	fi
+	if [ \`grep ^APP_KEY= .env\` = APP_KEY= ]; then
+		php artisan key:generate
+	fi
 	php artisan serve --host=0.0.0.0
 	EOF
 git config --global safe.directory /workspace

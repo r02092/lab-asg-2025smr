@@ -17,7 +17,10 @@ export default defineConfig(({mode}) => {
 			{
 				name: "copy-appsscript-json",
 				writeBundle() {
-					fs.copyFileSync("gas/appsscript.json", "gas/dist/appsscript.json");
+					if (mode === "gas") {
+						fs.mkdirSync("gas/dist", {recursive: true});
+						fs.copyFileSync("gas/appsscript.json", "gas/dist/appsscript.json");
+					}
 				},
 			},
 		],
