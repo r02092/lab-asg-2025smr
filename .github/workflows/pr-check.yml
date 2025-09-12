@@ -49,6 +49,7 @@ jobs:
           mkdir -p storage/framework/testing
           mkdir -p storage/framework/views
       - run: npm i
+      - run: npm run build
       - run: php artisan key:generate
       - run: php artisan migrate
-      - run: npm run dev & composer test
+      - run: composer test
