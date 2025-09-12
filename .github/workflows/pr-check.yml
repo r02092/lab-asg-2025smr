@@ -34,6 +34,7 @@ jobs:
           MARIADB_DATABASE: dev_db
           MARIADB_USER: dev_user
           MARIADB_PASSWORD: dev_pass
+          MARIADB_RANDOM_ROOT_PASSWORD: 1
         ports:
           - 3306:3306
     steps:
