@@ -21,9 +21,21 @@ return new class extends Migration {
             $table->unsignedTinyInteger('latin_num');
             $table->unsignedTinyInteger('digit_num');
         });
+
+        Schema::create('trees', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('orchard_id')->constrained()->cascadeOnDelete();
+            $table->unsignedTinyInteger('latin');
+            $table->unsignedTinyInteger('digit');
+            $table->unique(['orchard_id', 'latin', 'digit']);
+            $table->unsignedInteger('leaf_num');
+            $table->decimal('leaf_area', 17, 15);
+        });
     }
+
     public function down(): void
     {
         Schema::dropIfExists('orchards');
+        Schema::dropIfExists('trees');
     }
 };
