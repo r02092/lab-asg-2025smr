@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('tree', function (Blueprint $table) {
+        Schema::create('trees', function (Blueprint $table) {
             $table->id();
             $table->foreignId('orchard_id')->constrained()->cascadeOnDelete();
             $table->unsignedTinyInteger('latin');
@@ -19,6 +19,6 @@ return new class extends Migration {
     }
     public function down(): void
     {
-        Schema::dropIfExists('tree');
+        Schema::dropIfExists('trees');
     }
 };
