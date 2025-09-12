@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       db:
-        image: mariadb:10.5
+        image: mariadb:10.11
         env:
           MARIADB_DATABASE: dev_db
           MARIADB_USER: dev_user
