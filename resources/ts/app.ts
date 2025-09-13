@@ -40,3 +40,57 @@ const map = new maplibregl.Map({
 	zoom: 17,
 });
 map.addControl(new maplibregl.NavigationControl());
+const coordinates: GeoJSON.Position[] = [];
+map.on("click", e => {
+	const coordinate = [e.lngLat.lng, e.lngLat.lat];
+	coordinates.push(coordinate);
+	for (let i = 0; i < 3; i++) {
+		if (coordinates.length > i) {
+			const shape: GeoJSON.GeoJSON = <
+				GeoJSON.MultiPoint | GeoJSON.MultiLineString | GeoJSON.Polygon
+			>{
+				type: ["MultiPoint", "LineString", "Polygon"][i],
+				coordinates: i < 2 ? coordinates : [coordinates],
+			};
+			if (map.getLayer("layer_shape_" + String(i))) {
+				(<maplibregl.GeoJSONSource>(
+					map.getSource("source_shape_" + String(i))
+				)).setData(shape);
+			} else {
+				map.addSource("source_shape_" + String(i), {
+					type: "geojson",
+					data: shape,
+				});
+				map.addLayer(<
+					| maplibregl.CircleLayerSpecification
+					| maplibregl.LineLayerSpecification
+					| maplibregl.FillLayerSpecification
+				>{
+					id: "layer_shape_" + String(i),
+					type: <"circle" | "line" | "fill">["circle", "line", "fill"][i],
+					source: "source_shape_" + String(i),
+					layout: {},
+					paint: [
+						{
+							"circle-color": "#000",
+							"circle-radius": 10,
+						},
+						{
+							"line-color": "#00507C",
+							"line-width": 2,
+						},
+						{
+							"fill-color": "#00A0F8",
+							"fill-opacity": 0.4,
+						},
+					][i],
+				});
+				if (i)
+					map.moveLayer(
+						"layer_shape_" + String(i),
+						"layer_shape_" + String(i - 1),
+					);
+			}
+		}
+	}
+});
