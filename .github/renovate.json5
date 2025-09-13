@@ -24,6 +24,10 @@
 	prFooter: "このPull Requestは[Renovate Bot](https://github.com/renovatebot/renovate)によって自動で生成されました。",
 	packageRules: [
 		{
+			matchDatasources: ["docker"],
+			enabled: false,
+		},
+		{
 			matchManagers: ["npm"],
 			addLabels: ["💻フロントエンド"],
 			prBodyColumns: ["パッケージ", "変更", "経過時間", "信頼度"],
