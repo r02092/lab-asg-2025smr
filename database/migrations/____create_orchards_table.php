@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('orchards', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedInteger('orchard_id')->primary();
             $table->string('name');
             $table->unsignedInteger('lng0');
             $table->unsignedInteger('lat0');
@@ -23,11 +23,16 @@ return new class extends Migration {
         });
 
         Schema::create('trees', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('orchard_id')->constrained()->cascadeOnDelete();
+            $table->unsignedInteger('tree_id')->primary();
+            $table->unsignedInteger('orchard_id');
             $table->unsignedTinyInteger('latin');
             $table->unsignedTinyInteger('digit');
             $table->unique(['orchard_id', 'latin', 'digit']);
+            $table
+                ->foreign('orchard_id')
+                ->on('orchards')
+                ->references('orchard_id')
+                ->cascadeOnDelete();
             $table->unsignedInteger('leaf_num');
             $table->decimal('leaf_area', 17, 15);
         });
@@ -35,7 +40,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('orchards');
         Schema::dropIfExists('trees');
+        Schema::dropIfExists('orchards');
     }
 };
