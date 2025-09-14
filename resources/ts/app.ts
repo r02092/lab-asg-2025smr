@@ -87,7 +87,13 @@ function draw() {
 				GeoJSON.MultiPoint | GeoJSON.MultiLineString | GeoJSON.Polygon
 			>{
 				type: ["MultiPoint", "LineString", "Polygon"][i],
-				coordinates: i < 2 ? coordinates : [coordinates],
+				coordinates: [
+					coordinates,
+					coordinates.length < 4
+						? coordinates
+						: coordinates.concat([coordinates[0]]),
+					[coordinates],
+				][i],
 			};
 			const text: GeoJSON.FeatureCollection = {
 				type: "FeatureCollection",
