@@ -20,6 +20,7 @@ const map = new maplibregl.Map({
 	container: "map",
 	style: {
 		version: 8,
+		glyphs: "https://maps.gsi.go.jp/xyz/noto-jp/{fontstack}/{range}.pbf",
 		sources: {
 			seamlessphoto: {
 				type: "raster",
@@ -79,6 +80,9 @@ const inputElems = document.querySelectorAll(
 for (const i of inputElems) {
 	i.addEventListener("change", validate);
 }
+for (const i of document.querySelectorAll(".latin_digit > div > *")) {
+	i.addEventListener("change", draw);
+}
 function draw() {
 	for (let i = 0; i < 3; i++) {
 		if (coordinates.length > i) {
@@ -88,6 +92,29 @@ function draw() {
 				type: ["MultiPoint", "LineString", "Polygon"][i],
 				coordinates: i < 2 ? coordinates : [coordinates],
 			};
+			const text: GeoJSON.FeatureCollection = {
+				type: "FeatureCollection",
+				features: [],
+			};
+			if (!i)
+				text.features = coordinates.map((c, i) => ({
+					type: "Feature",
+					properties: {
+						desc:
+							[
+								"A",
+								(<HTMLSelectElement>document.getElementsByName("latin")[0])
+									.value,
+							][(i / 2) | 0] +
+							[
+								1,
+								(<HTMLInputElement>document.getElementsByName("digit")[0])
+									.value,
+							][i % 2 ^ (i / 2)] +
+							"付近",
+					},
+					geometry: {type: "Point", coordinates: c},
+				}));
 			if (map.getLayer("layer_shape_" + String(i))) {
 				(<maplibregl.GeoJSONSource>(
 					map.getSource("source_shape_" + String(i))
@@ -97,6 +124,12 @@ function draw() {
 					"visibility",
 					"visible",
 				);
+				if (!i) {
+					(<maplibregl.GeoJSONSource>map.getSource("source_text")).setData(
+						text,
+					);
+					map.setLayoutProperty("layer_text", "visibility", "visible");
+				}
 			} else {
 				map.addSource("source_shape_" + String(i), {
 					type: "geojson",
@@ -131,9 +164,30 @@ function draw() {
 						"layer_shape_" + String(i),
 						"layer_shape_" + String(i - 1),
 					);
+				else {
+					map.addSource("source_text", {
+						type: "geojson",
+						data: text,
+					});
+					map.addLayer({
+						id: "layer_text",
+						type: "symbol",
+						source: "source_text",
+						layout: {
+							"text-field": ["get", "desc"],
+							"text-font": ["NotoSansCJKjp-Regular"],
+						},
+						paint: {
+							"text-color": "#fff",
+							"text-halo-color": "#000",
+							"text-halo-width": 1,
+						},
+					});
+				}
 			}
 		} else {
 			map.setLayoutProperty("layer_shape_" + String(i), "visibility", "none");
+			if (!i) map.setLayoutProperty("layer_text", "visibility", "none");
 		}
 	}
 }
