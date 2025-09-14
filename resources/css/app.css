@@ -31,9 +31,9 @@ body {
 		margin: 0;
 		padding: 0;
 		overflow-y: scroll;
-		scrollbar-color: #444 transparent;
+		scrollbar-color: #777 #ccc;
 		> li {
-			border-bottom: 2px solid #444;
+			border-bottom: 2px solid #777;
 			padding: 1em 0.8em;
 		}
 	}
