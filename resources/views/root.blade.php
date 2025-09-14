@@ -27,7 +27,7 @@
 								A1〜
 								<div class="latin_digit">
 									<div>
-										<select name="latin" required>
+										<select name="latin">
 											@foreach(range('A', 'Z') as $i)
 												<option value="{{$i}}">{{$i}}</option>
 											@endforeach
@@ -39,6 +39,7 @@
 							<li>
 								右の地図上で園地の四隅を<br>
 								クリックしてください
+								<input type="hidden" name="coordinates">
 							</li>
 							<li>
 								樹木のデータを<br>
@@ -47,7 +48,7 @@
 							</li>
 							<li>
 								以下のボタンを押してください
-								<button type="submit">作成</button>
+								<button type="submit" disabled>作成</button>
 							</li>
 						</ol>
 					</form>

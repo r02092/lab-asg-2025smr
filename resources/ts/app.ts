@@ -57,8 +57,29 @@ const map = new maplibregl.Map({
 map.addControl(new maplibregl.NavigationControl());
 const coordinates: GeoJSON.Position[] = [];
 map.on("click", e => {
-	const coordinate = [e.lngLat.lng, e.lngLat.lat];
-	coordinates.push(coordinate);
+	if (coordinates.length < 4) {
+		const coordinate = [e.lngLat.lng, e.lngLat.lat];
+		coordinates.push(coordinate);
+		draw();
+		if (coordinates.length > 3) {
+			(<HTMLInputElement>document.getElementsByName("coordinates")[0]).value =
+				JSON.stringify(coordinates);
+			validate();
+		}
+	}
+});
+map.on("contextmenu", () => {
+	coordinates.pop();
+	draw();
+	validate();
+});
+const inputElems = document.querySelectorAll(
+	"#menu input:not([type='hidden'])",
+);
+for (const i of inputElems) {
+	i.addEventListener("change", validate);
+}
+function draw() {
 	for (let i = 0; i < 3; i++) {
 		if (coordinates.length > i) {
 			const shape: GeoJSON.GeoJSON = <
@@ -71,6 +92,11 @@ map.on("click", e => {
 				(<maplibregl.GeoJSONSource>(
 					map.getSource("source_shape_" + String(i))
 				)).setData(shape);
+				map.setLayoutProperty(
+					"layer_shape_" + String(i),
+					"visibility",
+					"visible",
+				);
 			} else {
 				map.addSource("source_shape_" + String(i), {
 					type: "geojson",
@@ -106,6 +132,13 @@ map.on("click", e => {
 						"layer_shape_" + String(i - 1),
 					);
 			}
+		} else {
+			map.setLayoutProperty("layer_shape_" + String(i), "visibility", "none");
 		}
 	}
-});
+}
+function validate() {
+	(<HTMLButtonElement>document.querySelector("#menu button")).disabled =
+		![...inputElems].every(e => (<HTMLInputElement>e).checkValidity()) ||
+		coordinates.length < 4;
+}
