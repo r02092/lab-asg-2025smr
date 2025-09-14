@@ -77,12 +77,9 @@ map.on("contextmenu", () => {
 const inputElems = document.querySelectorAll(
 	"#menu input:not([type='hidden'])",
 );
-for (const i of inputElems) {
-	i.addEventListener("change", validate);
-}
-for (const i of document.querySelectorAll(".latin_digit > div > *")) {
+for (const i of inputElems) i.addEventListener("change", validate);
+for (const i of document.querySelectorAll(".latin_digit > div > *"))
 	i.addEventListener("change", draw);
-}
 function draw() {
 	for (let i = 0; i < 3; i++) {
 		if (coordinates.length > i) {
