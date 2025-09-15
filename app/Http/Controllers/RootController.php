@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class RootController extends Controller
 {
+    public function get()
+    {
+        $orchards = Orchard::all();
+        return view('root', compact('orchards'));
+    }
     public function post(Request $request)
     {
         $request->validate([

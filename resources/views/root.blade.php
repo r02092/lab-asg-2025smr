@@ -9,9 +9,9 @@
 		<div id="menu">
 			<div><h1>樹木情報可視化ツール</h1></div>
 			<ul>
-				@for ($i = 0; $i < 3; $i++)
-					<li>園地</li>
-				@endfor
+				@foreach($orchards as $i)
+					<li data-id="{{$i->orchard_id}}">{{$i->name}}</li>
+				@endforeach
 				<li id="new">
 					新規作成
 					<form method="POST" enctype="multipart/form-data">
