@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class RootController extends Controller
 {
-    public function new(Request $request)
+    public function post(Request $request)
     {
         $request->validate([
             'name' => 'string|between:1,255',
