@@ -32,7 +32,7 @@
 												<option value="{{$i}}">{{$i}}</option>
 											@endforeach
 										</select>
-										<input type="number" name="digit" min="1" max="255" value="1" required>
+										<input type="number" name="digit" min="1" max="256" value="1" required>
 									</div>
 								</div>
 							</li>
