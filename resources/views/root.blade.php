@@ -10,7 +10,7 @@
 			<div><h1>樹木情報可視化ツール</h1></div>
 			<ul>
 				@foreach($orchards as $i)
-					<li data-id="{{$i->orchard_id}}">{{$i->name}}</li>
+					<li data-id="{{$i->id}}">{{$i->name}}</li>
 				@endforeach
 				<li id="new">
 					新規作成
