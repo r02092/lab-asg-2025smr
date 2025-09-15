@@ -8,8 +8,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('orchards', function (Blueprint $table) {
-            $table->unsignedInteger('orchard_id')->primary();
+            $table->unsignedInteger('orchard_id')->autoIncrement()->primary();
             $table->string('name');
+            $table->unsignedTinyInteger('latin_num');
+            $table->unsignedTinyInteger('digit_num');
             $table->unsignedInteger('lng0');
             $table->unsignedInteger('lat0');
             $table->unsignedInteger('lng1');
@@ -18,12 +20,10 @@ return new class extends Migration {
             $table->unsignedInteger('lat2');
             $table->unsignedInteger('lng3');
             $table->unsignedInteger('lat3');
-            $table->unsignedTinyInteger('latin_num');
-            $table->unsignedTinyInteger('digit_num');
         });
 
         Schema::create('trees', function (Blueprint $table) {
-            $table->unsignedInteger('tree_id')->primary();
+            $table->unsignedInteger('tree_id')->autoIncrement()->primary();
             $table->unsignedInteger('orchard_id');
             $table->unsignedTinyInteger('latin');
             $table->unsignedTinyInteger('digit');
