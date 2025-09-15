@@ -15,6 +15,7 @@
 				<li id="new">
 					新規作成
 					<form method="POST" enctype="multipart/form-data">
+						@csrf
 						<ol>
 							<li>
 								<label>
