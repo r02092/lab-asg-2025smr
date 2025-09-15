@@ -35,6 +35,7 @@
 		{
 			matchManagers: ["composer"],
 			addLabels: ["🫀バックエンド"],
+			prBodyColumns: ["パッケージ", "変更", "経過時間", "信頼度"],
 		},
 		{
 			matchManagers: ["github-actions"],
