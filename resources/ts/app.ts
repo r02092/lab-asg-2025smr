@@ -196,10 +196,10 @@ function viewLeftClick(e: maplibregl.MapLayerMouseEvent) {
 					properties.leaf_num +
 					"枚<br>" +
 					"<span>平均葉面積</span>: " +
-					properties.leaf_area +
+					properties.leaf_area.toFixed(8) +
 					" cm<sup>2</sup><br>" +
 					"<span>合計葉面積</span>: " +
-					(properties.leaf_num * properties.leaf_area) / 10000 +
+					((properties.leaf_num * properties.leaf_area) / 10000).toFixed(8) +
 					" m<sup>2</sup>",
 			)
 			.addTo(map);

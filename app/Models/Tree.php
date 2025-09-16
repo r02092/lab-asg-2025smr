@@ -12,7 +12,7 @@ class Tree extends Model
         'latin' => 'int',
         'digit' => 'int',
         'leaf_num' => 'int',
-        'leaf_area' => 'int',
+        'leaf_area' => 'real',
     ];
     protected $guarded = ['tree_id'];
     public $timestamps = false;
