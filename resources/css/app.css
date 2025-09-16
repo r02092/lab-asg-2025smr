@@ -36,6 +36,9 @@ body {
 			border-bottom: 2px solid #777;
 			padding: 1em 0.8em;
 		}
+		> li.selected {
+			background: #fb8;
+		}
 	}
 	ol {
 		font-size: 1rem;

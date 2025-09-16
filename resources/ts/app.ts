@@ -87,6 +87,12 @@ const viewTrees: GeoJSON.FeatureCollection = {
 	type: "FeatureCollection",
 	features: [],
 };
+for (const i of document.querySelectorAll("#menu > ul > li")) {
+	i.addEventListener("click", async () => {
+		for (const j of document.querySelectorAll("#menu > ul > li"))
+			j.className = j === i ? "selected" : "";
+	});
+}
 for (const i of document.querySelectorAll("#menu > ul > li[data-id]")) {
 	i.addEventListener("click", async e => {
 		changeMode(false);
