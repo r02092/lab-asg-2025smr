@@ -173,7 +173,36 @@ function changeMode(isNew: boolean) {
 		newCoordinates = [];
 		map.off("click", newLeftClick);
 		map.off("contextmenu", newRightClick);
+		map.on("click", "layer_trees", viewLeftClick);
 	}
+}
+function viewLeftClick(e: maplibregl.MapLayerMouseEvent) {
+	const features = e.features;
+	if (!features) throw new Error("featuresが存在しません");
+	const properties = features[0].properties;
+	if (Object.keys(properties).length)
+		new maplibregl.Popup()
+			.setLngLat(
+				<maplibregl.LngLatLike>(
+					(<GeoJSON.Point>features[0].geometry).coordinates
+				),
+			)
+			.setHTML(
+				"<h2>" +
+					properties.latin +
+					properties.digit +
+					"</h2>" +
+					"<span>葉数</span>: " +
+					properties.leaf_num +
+					"枚<br>" +
+					"<span>平均葉面積</span>: " +
+					properties.leaf_area +
+					" cm<sup>2</sup><br>" +
+					"<span>合計葉面積</span>: " +
+					(properties.leaf_num * properties.leaf_area) / 10000 +
+					" m<sup>2</sup>",
+			)
+			.addTo(map);
 }
 function newLeftClick(e: maplibregl.MapMouseEvent) {
 	if (newCoordinates.length < 4) {
