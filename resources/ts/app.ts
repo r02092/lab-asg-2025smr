@@ -56,146 +56,188 @@ const map = new maplibregl.Map({
 	zoom: 17,
 });
 map.addControl(new maplibregl.NavigationControl());
-const coordinates: GeoJSON.Position[] = [];
+const newCoordinates: GeoJSON.Position[] = [];
 map.on("click", e => {
-	if (coordinates.length < 4) {
-		const coordinate = [e.lngLat.lng, e.lngLat.lat];
-		coordinates.push(coordinate);
-		draw();
-		if (coordinates.length > 3) {
+	if (newCoordinates.length < 4) {
+		newCoordinates.push([e.lngLat.lng, e.lngLat.lat]);
+		drawNewOrchard(newCoordinates);
+		if (newCoordinates.length > 3) {
 			(<HTMLInputElement>document.getElementsByName("coordinates")[0]).value =
-				JSON.stringify(coordinates);
+				JSON.stringify(newCoordinates);
 			validate();
 		}
 	}
 });
 map.on("contextmenu", () => {
-	coordinates.pop();
-	draw();
+	newCoordinates.pop();
+	drawNewOrchard(newCoordinates);
 	validate();
 });
+for (const i of document.querySelectorAll("#menu > ul > li[data-id]")) {
+	i.addEventListener("click", async e => {
+		const id = (<HTMLLIElement>e.currentTarget).dataset.id;
+		location.hash = "#" + id;
+		const orchard = await (await fetch("/orchard/" + id)).json();
+		const s012 =
+			(orchard.lng0 - orchard.lng1) * (orchard.lat2 - orchard.lat1) -
+			(orchard.lng2 - orchard.lng1) * (orchard.lat0 - orchard.lat1);
+		const s023 =
+			(orchard.lng0 - orchard.lng2) * (orchard.lat3 - orchard.lat2) -
+			(orchard.lng3 - orchard.lng2) * (orchard.lat0 - orchard.lat2);
+		const mapElem = document.getElementById("map");
+		if (!mapElem) throw new Error("#mapがありません");
+		map.flyTo({
+			center: [
+				((orchard.lng0 + orchard.lng1 + orchard.lng2) * s012 +
+					(orchard.lng0 + orchard.lng2 + orchard.lng3) * s023) /
+					((s012 + s023) * 3),
+				((orchard.lat0 + orchard.lat1 + orchard.lat2) * s012 +
+					(orchard.lat0 + orchard.lat2 + orchard.lat3) * s023) /
+					((s012 + s023) * 3),
+			],
+			zoom:
+				16 -
+				Math.log2(
+					(Math.max(
+						Math.max(orchard.lng0, orchard.lng1, orchard.lng2, orchard.lng3) -
+							Math.min(orchard.lng0, orchard.lng1, orchard.lng2, orchard.lng3),
+						Math.max(orchard.lat0, orchard.lat1, orchard.lat2, orchard.lat3) -
+							Math.min(orchard.lat0, orchard.lat1, orchard.lat2, orchard.lat3),
+					) *
+						100000) /
+						Math.min(mapElem.clientWidth, mapElem.clientHeight),
+				),
+			bearing: 0,
+			pitch: 0,
+		});
+		drawOrchard(2, [
+			[orchard.lng0, orchard.lat0],
+			[orchard.lng1, orchard.lat1],
+			[orchard.lng2, orchard.lat2],
+			[orchard.lng3, orchard.lat3],
+		]);
+	});
+}
 const inputElems = document.querySelectorAll(
 	"#menu input:not([type='hidden'])",
 );
 for (const i of inputElems) i.addEventListener("change", validate);
 for (const i of document.querySelectorAll(".latin_digit > div > *"))
-	i.addEventListener("change", draw);
-function draw() {
-	for (let i = 0; i < 3; i++) {
-		if (coordinates.length > i) {
-			const shape: GeoJSON.GeoJSON = <
-				GeoJSON.MultiPoint | GeoJSON.MultiLineString | GeoJSON.Polygon
-			>{
-				type: ["MultiPoint", "LineString", "Polygon"][i],
-				coordinates: [
-					coordinates,
-					coordinates.length < 4
-						? coordinates
-						: coordinates.concat([coordinates[0]]),
-					[coordinates],
-				][i],
-			};
-			const text: GeoJSON.FeatureCollection = {
-				type: "FeatureCollection",
-				features: [],
-			};
-			if (!i)
-				text.features = coordinates.map((c, i) => ({
-					type: "Feature",
-					properties: {
-						desc:
-							[
-								"A",
-								(<HTMLSelectElement>document.getElementsByName("latin")[0])
-									.value,
-							][(i / 2) | 0] +
-							[
-								1,
-								(<HTMLInputElement>document.getElementsByName("digit")[0])
-									.value,
-							][i % 2 ^ (i / 2)] +
-							"付近",
-					},
-					geometry: {type: "Point", coordinates: c},
-				}));
-			if (map.getLayer("layer_shape_" + String(i))) {
-				(<maplibregl.GeoJSONSource>(
-					map.getSource("source_shape_" + String(i))
-				)).setData(shape);
-				map.setLayoutProperty(
-					"layer_shape_" + String(i),
-					"visibility",
-					"visible",
-				);
-				if (!i) {
-					(<maplibregl.GeoJSONSource>map.getSource("source_text")).setData(
-						text,
-					);
-					map.setLayoutProperty("layer_text", "visibility", "visible");
-				}
-			} else {
-				map.addSource("source_shape_" + String(i), {
-					type: "geojson",
-					data: shape,
-				});
-				map.addLayer(<
-					| maplibregl.CircleLayerSpecification
-					| maplibregl.LineLayerSpecification
-					| maplibregl.FillLayerSpecification
-				>{
-					id: "layer_shape_" + String(i),
-					type: <"circle" | "line" | "fill">["circle", "line", "fill"][i],
-					source: "source_shape_" + String(i),
-					layout: {},
-					paint: [
-						{
-							"circle-color": "#000",
-							"circle-radius": 10,
-						},
-						{
-							"line-color": "#00507C",
-							"line-width": 2,
-						},
-						{
-							"fill-color": "#00A0F8",
-							"fill-opacity": 0.4,
-						},
-					][i],
-				});
-				if (i)
-					map.moveLayer(
-						"layer_shape_" + String(i),
-						"layer_shape_" + String(i - 1),
-					);
-				else {
-					map.addSource("source_text", {
-						type: "geojson",
-						data: text,
-					});
-					map.addLayer({
-						id: "layer_text",
-						type: "symbol",
-						source: "source_text",
-						layout: {
-							"text-field": ["get", "desc"],
-							"text-font": ["NotoSansCJKjp-Regular"],
-						},
-						paint: {
-							"text-color": "#fff",
-							"text-halo-color": "#000",
-							"text-halo-width": 1,
-						},
-					});
-				}
+	i.addEventListener("change", () => drawNewOrchard(newCoordinates));
+function drawOrchard(type: number, coordinates: GeoJSON.Position[]) {
+	if (coordinates.length > type) {
+		const shape: GeoJSON.GeoJSON = <
+			GeoJSON.MultiPoint | GeoJSON.MultiLineString | GeoJSON.Polygon
+		>{
+			type: ["MultiPoint", "LineString", "Polygon"][type],
+			coordinates: [
+				coordinates,
+				coordinates.length < 4
+					? coordinates
+					: coordinates.concat([coordinates[0]]),
+				[coordinates],
+			][type],
+		};
+		const text: GeoJSON.FeatureCollection = {
+			type: "FeatureCollection",
+			features: [],
+		};
+		if (!type)
+			text.features = coordinates.map((c, i) => ({
+				type: "Feature",
+				properties: {
+					desc:
+						[
+							"A",
+							(<HTMLSelectElement>document.getElementsByName("latin")[0]).value,
+						][(i / 2) | 0] +
+						[
+							1,
+							(<HTMLInputElement>document.getElementsByName("digit")[0]).value,
+						][i % 2 ^ (i / 2)] +
+						"付近",
+				},
+				geometry: {type: "Point", coordinates: c},
+			}));
+		if (map.getLayer("layer_shape_" + String(type))) {
+			(<maplibregl.GeoJSONSource>(
+				map.getSource("source_shape_" + String(type))
+			)).setData(shape);
+			map.setLayoutProperty(
+				"layer_shape_" + String(type),
+				"visibility",
+				"visible",
+			);
+			if (!type) {
+				(<maplibregl.GeoJSONSource>map.getSource("source_text")).setData(text);
+				map.setLayoutProperty("layer_text", "visibility", "visible");
 			}
 		} else {
-			map.setLayoutProperty("layer_shape_" + String(i), "visibility", "none");
-			if (!i) map.setLayoutProperty("layer_text", "visibility", "none");
+			map.addSource("source_shape_" + String(type), {
+				type: "geojson",
+				data: shape,
+			});
+			map.addLayer(<
+				| maplibregl.CircleLayerSpecification
+				| maplibregl.LineLayerSpecification
+				| maplibregl.FillLayerSpecification
+			>{
+				id: "layer_shape_" + String(type),
+				type: <"circle" | "line" | "fill">["circle", "line", "fill"][type],
+				source: "source_shape_" + String(type),
+				layout: {},
+				paint: [
+					{
+						"circle-color": "#000",
+						"circle-radius": 10,
+					},
+					{
+						"line-color": "#00507C",
+						"line-width": 2,
+					},
+					{
+						"fill-color": "#00A0F8",
+						"fill-opacity": 0.4,
+					},
+				][type],
+			});
+			if (type) {
+				if (map.getLayer("layer_shape_" + String(type - 1)))
+					map.moveLayer(
+						"layer_shape_" + String(type),
+						"layer_shape_" + String(type - 1),
+					);
+			} else {
+				map.addSource("source_text", {
+					type: "geojson",
+					data: text,
+				});
+				map.addLayer({
+					id: "layer_text",
+					type: "symbol",
+					source: "source_text",
+					layout: {
+						"text-field": ["get", "desc"],
+						"text-font": ["NotoSansCJKjp-Regular"],
+					},
+					paint: {
+						"text-color": "#fff",
+						"text-halo-color": "#000",
+						"text-halo-width": 1,
+					},
+				});
+			}
 		}
+	} else {
+		map.setLayoutProperty("layer_shape_" + String(type), "visibility", "none");
+		if (!type) map.setLayoutProperty("layer_text", "visibility", "none");
 	}
+}
+function drawNewOrchard(coordinates: GeoJSON.Position[]) {
+	for (let i = 0; i < 3; i++) drawOrchard(i, coordinates);
 }
 function validate() {
 	(<HTMLButtonElement>document.querySelector("#menu button")).disabled =
 		![...inputElems].every(e => (<HTMLInputElement>e).checkValidity()) ||
-		coordinates.length < 4;
+		newCoordinates.length < 4;
 }
