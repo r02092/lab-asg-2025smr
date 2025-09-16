@@ -10,6 +10,9 @@ class ApiController extends Controller
 {
     public function get($orchard_id)
     {
-        return response()->json(Orchard::find($orchard_id));
+        return response()->json([
+            'orchard' => Orchard::find($orchard_id),
+            'trees' => Tree::where('orchard_id', $orchard_id)->get(),
+        ]);
     }
 }

@@ -78,32 +78,56 @@ for (const i of document.querySelectorAll("#menu > ul > li[data-id]")) {
 	i.addEventListener("click", async e => {
 		const id = (<HTMLLIElement>e.currentTarget).dataset.id;
 		location.hash = "#" + id;
-		const orchard = await (await fetch("/orchard/" + id)).json();
+		const data = await (await fetch("/orchard/" + id)).json();
 		const s012 =
-			(orchard.lng0 - orchard.lng1) * (orchard.lat2 - orchard.lat1) -
-			(orchard.lng2 - orchard.lng1) * (orchard.lat0 - orchard.lat1);
+			(data.orchard.lng0 - data.orchard.lng1) *
+				(data.orchard.lat2 - data.orchard.lat1) -
+			(data.orchard.lng2 - data.orchard.lng1) *
+				(data.orchard.lat0 - data.orchard.lat1);
 		const s023 =
-			(orchard.lng0 - orchard.lng2) * (orchard.lat3 - orchard.lat2) -
-			(orchard.lng3 - orchard.lng2) * (orchard.lat0 - orchard.lat2);
+			(data.orchard.lng0 - data.orchard.lng2) *
+				(data.orchard.lat3 - data.orchard.lat2) -
+			(data.orchard.lng3 - data.orchard.lng2) *
+				(data.orchard.lat0 - data.orchard.lat2);
 		const mapElem = document.getElementById("map");
 		if (!mapElem) throw new Error("#mapがありません");
 		map.flyTo({
 			center: [
-				((orchard.lng0 + orchard.lng1 + orchard.lng2) * s012 +
-					(orchard.lng0 + orchard.lng2 + orchard.lng3) * s023) /
+				((data.orchard.lng0 + data.orchard.lng1 + data.orchard.lng2) * s012 +
+					(data.orchard.lng0 + data.orchard.lng2 + data.orchard.lng3) * s023) /
 					((s012 + s023) * 3),
-				((orchard.lat0 + orchard.lat1 + orchard.lat2) * s012 +
-					(orchard.lat0 + orchard.lat2 + orchard.lat3) * s023) /
+				((data.orchard.lat0 + data.orchard.lat1 + data.orchard.lat2) * s012 +
+					(data.orchard.lat0 + data.orchard.lat2 + data.orchard.lat3) * s023) /
 					((s012 + s023) * 3),
 			],
 			zoom:
 				16 -
 				Math.log2(
 					(Math.max(
-						Math.max(orchard.lng0, orchard.lng1, orchard.lng2, orchard.lng3) -
-							Math.min(orchard.lng0, orchard.lng1, orchard.lng2, orchard.lng3),
-						Math.max(orchard.lat0, orchard.lat1, orchard.lat2, orchard.lat3) -
-							Math.min(orchard.lat0, orchard.lat1, orchard.lat2, orchard.lat3),
+						Math.max(
+							data.orchard.lng0,
+							data.orchard.lng1,
+							data.orchard.lng2,
+							data.orchard.lng3,
+						) -
+							Math.min(
+								data.orchard.lng0,
+								data.orchard.lng1,
+								data.orchard.lng2,
+								data.orchard.lng3,
+							),
+						Math.max(
+							data.orchard.lat0,
+							data.orchard.lat1,
+							data.orchard.lat2,
+							data.orchard.lat3,
+						) -
+							Math.min(
+								data.orchard.lat0,
+								data.orchard.lat1,
+								data.orchard.lat2,
+								data.orchard.lat3,
+							),
 					) *
 						100000) /
 						Math.min(mapElem.clientWidth, mapElem.clientHeight),
@@ -112,10 +136,10 @@ for (const i of document.querySelectorAll("#menu > ul > li[data-id]")) {
 			pitch: 0,
 		});
 		drawOrchard(2, [
-			[orchard.lng0, orchard.lat0],
-			[orchard.lng1, orchard.lat1],
-			[orchard.lng2, orchard.lat2],
-			[orchard.lng3, orchard.lat3],
+			[data.orchard.lng0, data.orchard.lat0],
+			[data.orchard.lng1, data.orchard.lat1],
+			[data.orchard.lng2, data.orchard.lat2],
+			[data.orchard.lng3, data.orchard.lat3],
 		]);
 	});
 }
