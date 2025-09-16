@@ -28,10 +28,7 @@ cat <<-EOF > ~/entrypoint.sh
 	EOF
 ln -s /usr/bin/php84 /usr/local/bin/php
 git config --global safe.directory /workspace
-mkdir -p /workspace/storage/framework/cache/data
-mkdir -p /workspace/storage/framework/sessions
-mkdir -p /workspace/storage/framework/testing
-mkdir -p /workspace/storage/framework/views
+mkdir -p /workspace/storage/framework/{cache/data,sessions,testing,views}
 wget -O - https://getcomposer.org/installer | php -- --filename /usr/local/bin/composer
 wget -O - https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh | sh -s -- -b /usr/local/bin v0.18.1
 EOS
