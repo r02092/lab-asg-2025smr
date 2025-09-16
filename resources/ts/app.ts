@@ -30,6 +30,8 @@ const map = new maplibregl.Map({
 				tileSize: 256,
 				attribution:
 					"<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>",
+				minzoom: 2,
+				maxzoom: 18,
 			},
 			terrain: useGsiTerrainSource(maplibregl.addProtocol, {
 				tileUrl: "https://tiles.gsj.jp/tiles/elev/land/{z}/{y}/{x}.png",
@@ -43,8 +45,6 @@ const map = new maplibregl.Map({
 				id: "seamlessphoto",
 				type: "raster",
 				source: "seamlessphoto",
-				minzoom: 14,
-				maxzoom: 18,
 			},
 		],
 		terrain: {
