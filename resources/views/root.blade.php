@@ -12,8 +12,7 @@
 				@foreach($orchards as $i)
 					<li data-id="{{$i->id}}">{{$i->name}}</li>
 				@endforeach
-				<li>
-					新規作成
+				<li>新規作成
 					<form method="POST" enctype="multipart/form-data">
 						@csrf
 						<ol>
