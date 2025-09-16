@@ -4,6 +4,14 @@ import {faCirclePlus} from "@fortawesome/free-solid-svg-icons/faCirclePlus";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {useGsiTerrainSource} from "maplibre-gl-gsi-terrain";
+type Tree = {
+	id: number;
+	orchard_id: number;
+	latin: string;
+	digit: number;
+	leaf_num: number;
+	leaf_area: number;
+};
 for (let i = 0; i < 2; i++) {
 	const iconElem = icon([faMapLocationDot, faCirclePlus][i]).node[0];
 	iconElem.setAttribute("xmlns", "http://www.w3.org/2000/svg");
@@ -16,6 +24,28 @@ for (let i = 0; i < 2; i++) {
 		iconElem.outerHTML +
 		"') inside}";
 }
+let data:
+	| {
+			orchard: {
+				id: number;
+				name: string;
+				latin_num: string;
+				digit_num: number;
+				lng0: number;
+				lat0: number;
+				lng1: number;
+				lat1: number;
+				lng2: number;
+				lat2: number;
+				lng3: number;
+				lat3: number;
+				center: maplibregl.LngLatLike;
+			};
+			trees: Tree[];
+	  }
+	| undefined;
+const isSelected = /^#\d+$/.test(location.hash);
+if (isSelected) await loadOrchard(location.hash.slice(1));
 const map = new maplibregl.Map({
 	container: "map",
 	style: {
@@ -52,8 +82,8 @@ const map = new maplibregl.Map({
 			exaggeration: 1.2,
 		},
 	},
-	center: [133.719998, 33.620661],
-	zoom: 17,
+	center: data ? data.orchard.center : [133.719998, 33.620661],
+	zoom: 19,
 });
 map.addControl(new maplibregl.NavigationControl());
 map.addControl(new maplibregl.ScaleControl());
@@ -83,6 +113,7 @@ map.addControl(
 	})(),
 	"top-left",
 );
+if (isSelected) map.on("load", viewOrchard);
 const viewTrees: GeoJSON.FeatureCollection = {
 	type: "FeatureCollection",
 	features: [],
@@ -93,136 +124,8 @@ for (const i of document.querySelectorAll("#menu > ul > li")) {
 			j.className = j === i ? "selected" : "";
 	});
 }
-for (const i of document.querySelectorAll("#menu > ul > li[data-id]")) {
-	i.addEventListener("click", async e => {
-		changeMode(false);
-		const id = (<HTMLLIElement>e.currentTarget).dataset.id;
-		location.hash = "#" + id;
-		const data = await (await fetch("/orchard/" + id)).json();
-		const s012 =
-			(data.orchard.lng0 - data.orchard.lng1) *
-				(data.orchard.lat2 - data.orchard.lat1) -
-			(data.orchard.lng2 - data.orchard.lng1) *
-				(data.orchard.lat0 - data.orchard.lat1);
-		const s023 =
-			(data.orchard.lng0 - data.orchard.lng2) *
-				(data.orchard.lat3 - data.orchard.lat2) -
-			(data.orchard.lng3 - data.orchard.lng2) *
-				(data.orchard.lat0 - data.orchard.lat2);
-		const mapElem = document.getElementById("map");
-		if (!mapElem) throw new Error("#mapがありません");
-		map.flyTo({
-			center: [
-				((data.orchard.lng0 + data.orchard.lng1 + data.orchard.lng2) * s012 +
-					(data.orchard.lng0 + data.orchard.lng2 + data.orchard.lng3) * s023) /
-					((s012 + s023) * 3),
-				((data.orchard.lat0 + data.orchard.lat1 + data.orchard.lat2) * s012 +
-					(data.orchard.lat0 + data.orchard.lat2 + data.orchard.lat3) * s023) /
-					((s012 + s023) * 3),
-			],
-			zoom:
-				16 -
-				Math.log2(
-					(Math.max(
-						Math.max(
-							data.orchard.lng0,
-							data.orchard.lng1,
-							data.orchard.lng2,
-							data.orchard.lng3,
-						) -
-							Math.min(
-								data.orchard.lng0,
-								data.orchard.lng1,
-								data.orchard.lng2,
-								data.orchard.lng3,
-							),
-						Math.max(
-							data.orchard.lat0,
-							data.orchard.lat1,
-							data.orchard.lat2,
-							data.orchard.lat3,
-						) -
-							Math.min(
-								data.orchard.lat0,
-								data.orchard.lat1,
-								data.orchard.lat2,
-								data.orchard.lat3,
-							),
-					) *
-						100000) /
-						Math.min(mapElem.clientWidth, mapElem.clientHeight),
-				),
-			bearing: 0,
-			pitch: 0,
-		});
-		drawOrchard(2, [
-			[data.orchard.lng0, data.orchard.lat0],
-			[data.orchard.lng1, data.orchard.lat1],
-			[data.orchard.lng2, data.orchard.lat2],
-			[data.orchard.lng3, data.orchard.lat3],
-		]);
-		viewTrees.features = [];
-		for (
-			let i = "A".charCodeAt(0);
-			i <= data.orchard.latin_num.charCodeAt(0);
-			i++
-		) {
-			const riDivider =
-				(data.orchard.latin_num.charCodeAt(0) - "A".charCodeAt(0) + 1) * 2;
-			const rjDivider = data.orchard.digit_num * 2;
-			for (let j = 1; j <= data.orchard.digit_num; j++) {
-				const ri = ((i - "A".charCodeAt(0)) * 2 + 1) / riDivider;
-				const rj = (j * 2 - 1) / rjDivider;
-				viewTrees.features.push({
-					type: "Feature",
-					properties: data.trees.find(
-						(t: {
-							id: number;
-							orchard_id: number;
-							latin: string;
-							digit: number;
-							leaf_num: number;
-							leaf_area: number;
-						}) => t.latin === String.fromCharCode(i) && t.digit === j,
-					),
-					geometry: {
-						type: "Point",
-						coordinates: [
-							data.orchard.lng0 +
-								(data.orchard.lng1 - data.orchard.lng0) * (1 - ri) * rj +
-								(data.orchard.lng2 - data.orchard.lng0) * ri * rj +
-								(data.orchard.lng3 - data.orchard.lng0) * ri * (1 - rj),
-							data.orchard.lat0 +
-								(data.orchard.lat1 - data.orchard.lat0) * (1 - ri) * rj +
-								(data.orchard.lat2 - data.orchard.lat0) * ri * rj +
-								(data.orchard.lat3 - data.orchard.lat0) * ri * (1 - rj),
-						],
-					},
-				});
-			}
-		}
-		if (map.getLayer("layer_trees")) {
-			(<maplibregl.GeoJSONSource>map.getSource("source_trees")).setData(
-				viewTrees,
-			);
-		} else {
-			map.addSource("source_trees", {
-				type: "geojson",
-				data: viewTrees,
-			});
-			map.addLayer(<maplibregl.CircleLayerSpecification>{
-				id: "layer_trees",
-				type: "circle",
-				source: "source_trees",
-				layout: {},
-				paint: {
-					"circle-radius": 15,
-				},
-			});
-		}
-		paintTrees();
-	});
-}
+for (const i of document.querySelectorAll("#menu > ul > li[data-id]"))
+	i.addEventListener("click", viewOrchard);
 document
 	.querySelector("#menu > ul > li:last-child")
 	?.addEventListener("click", () => changeMode(true));
@@ -260,6 +163,114 @@ function newRightClick() {
 	newCoordinates.pop();
 	drawNewOrchard(newCoordinates);
 	validate();
+}
+async function loadOrchard(id: string) {
+	data = await (await fetch("/orchard/" + id)).json();
+	if (!data) throw new Error("APIによるデータの取得に失敗しました");
+	const s012 =
+		(data.orchard.lng0 - data.orchard.lng1) *
+			(data.orchard.lat2 - data.orchard.lat1) -
+		(data.orchard.lng2 - data.orchard.lng1) *
+			(data.orchard.lat0 - data.orchard.lat1);
+	const s023 =
+		(data.orchard.lng0 - data.orchard.lng2) *
+			(data.orchard.lat3 - data.orchard.lat2) -
+		(data.orchard.lng3 - data.orchard.lng2) *
+			(data.orchard.lat0 - data.orchard.lat2);
+	data.orchard.center = [
+		((data.orchard.lng0 + data.orchard.lng1 + data.orchard.lng2) * s012 +
+			(data.orchard.lng0 + data.orchard.lng2 + data.orchard.lng3) * s023) /
+			((s012 + s023) * 3),
+		((data.orchard.lat0 + data.orchard.lat1 + data.orchard.lat2) * s012 +
+			(data.orchard.lat0 + data.orchard.lat2 + data.orchard.lat3) * s023) /
+			((s012 + s023) * 3),
+	];
+}
+async function viewOrchard(e: Event | maplibregl.MapLibreEvent) {
+	changeMode(false);
+	const id =
+		e.type !== "load"
+			? (<HTMLLIElement>(<Event>e).currentTarget).dataset.id
+			: location.hash.slice(1);
+	if (e.type !== "load") location.hash = "#" + id;
+	else {
+		const selectedElem = document.querySelector(
+			'#menu > ul > li[data-id="' + id + '"]',
+		);
+		if (selectedElem) selectedElem.className = "selected";
+	}
+	if (!id) throw new Error("idがありません");
+	if (!data || data.orchard.id !== Number(id)) await loadOrchard(id);
+	if (!data) throw new Error("データの読み込みに失敗しました");
+	const mapElem = document.getElementById("map");
+	if (!mapElem) throw new Error("#mapがありません");
+	map.flyTo({
+		center: data.orchard.center,
+		zoom: 19,
+		bearing: 0,
+		pitch: 0,
+	});
+	drawOrchard(2, [
+		[data.orchard.lng0, data.orchard.lat0],
+		[data.orchard.lng1, data.orchard.lat1],
+		[data.orchard.lng2, data.orchard.lat2],
+		[data.orchard.lng3, data.orchard.lat3],
+	]);
+	viewTrees.features = [];
+	for (
+		let i = "A".charCodeAt(0);
+		i <= data.orchard.latin_num.charCodeAt(0);
+		i++
+	) {
+		const riDivider =
+			(data.orchard.latin_num.charCodeAt(0) - "A".charCodeAt(0) + 1) * 2;
+		const rjDivider = data.orchard.digit_num * 2;
+		for (let j = 1; j <= data.orchard.digit_num; j++) {
+			const ri = ((i - "A".charCodeAt(0)) * 2 + 1) / riDivider;
+			const rj = (j * 2 - 1) / rjDivider;
+			viewTrees.features.push({
+				type: "Feature",
+				properties: <GeoJSON.GeoJsonProperties>(
+					data.trees.find(
+						(t: Tree) => t.latin === String.fromCharCode(i) && t.digit === j,
+					)
+				),
+				geometry: {
+					type: "Point",
+					coordinates: [
+						data.orchard.lng0 +
+							(data.orchard.lng1 - data.orchard.lng0) * (1 - ri) * rj +
+							(data.orchard.lng2 - data.orchard.lng0) * ri * rj +
+							(data.orchard.lng3 - data.orchard.lng0) * ri * (1 - rj),
+						data.orchard.lat0 +
+							(data.orchard.lat1 - data.orchard.lat0) * (1 - ri) * rj +
+							(data.orchard.lat2 - data.orchard.lat0) * ri * rj +
+							(data.orchard.lat3 - data.orchard.lat0) * ri * (1 - rj),
+					],
+				},
+			});
+		}
+	}
+	if (map.getLayer("layer_trees")) {
+		(<maplibregl.GeoJSONSource>map.getSource("source_trees")).setData(
+			viewTrees,
+		);
+	} else {
+		map.addSource("source_trees", {
+			type: "geojson",
+			data: viewTrees,
+		});
+		map.addLayer(<maplibregl.CircleLayerSpecification>{
+			id: "layer_trees",
+			type: "circle",
+			source: "source_trees",
+			layout: {},
+			paint: {
+				"circle-radius": 15,
+			},
+		});
+	}
+	paintTrees();
 }
 function paintTrees() {
 	map.setLayoutProperty("layer_trees", "visibility", "visible");

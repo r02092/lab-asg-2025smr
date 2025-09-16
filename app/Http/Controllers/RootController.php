@@ -73,6 +73,6 @@ class RootController extends Controller
             $tree->leaf_area = $values[3];
             $tree->save();
         }
-        return redirect('/');
+        return redirect('/#' . $orchard_id);
     }
 }
