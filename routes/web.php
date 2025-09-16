@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\RootController;
+use App\Http\Controllers\ApiController;
 
-Route::get('/', function () {
-    return view('root');
-});
-Route::post('/', [RootController::class, 'new']);
+Route::get('/', [RootController::class, 'get']);
+Route::post('/', [RootController::class, 'post']);
+Route::get('/orchard/{orchard_id}', [ApiController::class, 'get']);

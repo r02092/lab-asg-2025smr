@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('orchards', function (Blueprint $table) {
-            $table->unsignedInteger('orchard_id')->autoIncrement()->primary();
+            $table->unsignedInteger('id')->autoIncrement()->primary();
             $table->string('name');
             $table->unsignedTinyInteger('latin_num');
             $table->unsignedTinyInteger('digit_num');
@@ -23,7 +23,7 @@ return new class extends Migration {
         });
 
         Schema::create('trees', function (Blueprint $table) {
-            $table->unsignedInteger('tree_id')->autoIncrement()->primary();
+            $table->unsignedInteger('id')->autoIncrement()->primary();
             $table->unsignedInteger('orchard_id');
             $table->unsignedTinyInteger('latin');
             $table->unsignedTinyInteger('digit');
@@ -31,7 +31,7 @@ return new class extends Migration {
             $table
                 ->foreign('orchard_id')
                 ->on('orchards')
-                ->references('orchard_id')
+                ->references('id')
                 ->cascadeOnDelete();
             $table->unsignedInteger('leaf_num');
             $table->decimal('leaf_area', 17, 15);

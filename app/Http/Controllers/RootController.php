@@ -9,7 +9,12 @@ use Illuminate\Http\Request;
 
 class RootController extends Controller
 {
-    public function new(Request $request)
+    public function get()
+    {
+        $orchards = Orchard::all();
+        return view('root', compact('orchards'));
+    }
+    public function post(Request $request)
     {
         $request->validate([
             'name' => 'string|between:1,255',
@@ -68,6 +73,6 @@ class RootController extends Controller
             $tree->leaf_area = $values[3];
             $tree->save();
         }
-        return view('root');
+        return redirect('/#' . $orchard_id);
     }
 }

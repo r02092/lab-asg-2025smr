@@ -36,6 +36,9 @@ body {
 			border-bottom: 2px solid #777;
 			padding: 1em 0.8em;
 		}
+		> li.selected {
+			background: #fb8;
+		}
 	}
 	ol {
 		font-size: 1rem;
@@ -108,4 +111,25 @@ body {
 }
 #map {
 	width: calc(100% - 20rem);
+	.maplibregl-ctrl-styles-expanded {
+		display: flex;
+		button {
+			border-radius: 0;
+			width: auto;
+			padding: 0 8px;
+			color: #333;
+			+ button {
+				border: none;
+			}
+		}
+		button:first-child {
+			border-radius: 4px 0 0 4px;
+		}
+		button:last-child {
+			border-radius: 0 4px 4px 0;
+		}
+		button[data-active="true"] {
+			background: rgba(0, 0, 0, 0.05);
+		}
+	}
 }
