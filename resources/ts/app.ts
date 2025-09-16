@@ -56,6 +56,7 @@ const map = new maplibregl.Map({
 	zoom: 17,
 });
 map.addControl(new maplibregl.NavigationControl());
+map.addControl(new maplibregl.ScaleControl());
 const newCoordinates: GeoJSON.Position[] = [];
 map.on("click", e => {
 	if (newCoordinates.length < 4) {
