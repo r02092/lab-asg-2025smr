@@ -1,6 +1,7 @@
 import {icon} from "@fortawesome/fontawesome-svg-core";
 import {faLocationDot} from "@fortawesome/free-solid-svg-icons/faLocationDot";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons/faCirclePlus";
+import {faXmark} from "@fortawesome/free-solid-svg-icons/faXmark";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {useGsiTerrainSource} from "maplibre-gl-gsi-terrain";
@@ -12,17 +13,21 @@ type Tree = {
 	leaf_num: number;
 	leaf_area: number;
 };
-for (let i = 0; i < 2; i++) {
-	const iconElem = icon([faLocationDot, faCirclePlus][i]).node[0];
+for (let i = 0; i < 3; i++) {
+	const iconElem = icon([faLocationDot, faCirclePlus, faXmark][i]).node[0];
 	iconElem.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 	iconElem.setAttribute("width", "1.1rem");
 	iconElem.setAttribute("height", "1rem");
 	document.head.appendChild(document.createElement("style")).innerText =
-		"#menu>ul>li" +
-		["", ":last-child"][i] +
-		"{list-style:url('data:image/svg+xml;charset=utf-8," +
-		iconElem.outerHTML +
-		"') inside}";
+		i < 2
+			? "#menu>ul>li" +
+				["", ":last-child"][i] +
+				"{list-style:url('data:image/svg+xml;charset=utf-8," +
+				iconElem.outerHTML +
+				"') inside}"
+			: "#menu>ul>li>div{background-image:url('data:image/svg+xml;charset=utf-8," +
+				iconElem.outerHTML.replace("currentColor", "white") +
+				"')";
 }
 let data:
 	| {
@@ -126,6 +131,28 @@ for (const i of document.querySelectorAll("#menu > ul > li")) {
 }
 for (const i of document.querySelectorAll("#menu > ul > li[data-id]"))
 	i.addEventListener("click", viewOrchard);
+document
+	.querySelector("#menu > ul > li:last-child")
+	?.addEventListener("click", () => changeMode(true));
+for (const i of document.querySelectorAll("#menu > ul > li > div"))
+	i.addEventListener("click", async () => {
+		const parentElem = i.parentElement;
+		if (!parentElem) throw new Error("親要素が存在しません");
+		if (confirm("削除しますか?")) {
+			const csrfToken = document
+				.querySelector('meta[name="csrf-token"]')
+				?.getAttribute("content");
+			if (!csrfToken) throw new Error("CSRFトークンの取得に失敗しました");
+			await fetch("/orchard/" + parentElem.dataset.id, {
+				method: "DELETE",
+				headers: {
+					"X-CSRF-TOKEN": csrfToken,
+				},
+			});
+			parentElem.remove();
+			location.hash = "";
+		}
+	});
 document
 	.querySelector("#menu > ul > li:last-child")
 	?.addEventListener("click", () => changeMode(true));

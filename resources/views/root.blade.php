@@ -4,13 +4,14 @@
 		<meta charset="utf-8">
 		<title>樹木情報可視化ツール</title>
 		@vite(['resources/css/app.css', 'resources/ts/app.ts'])
+		<meta name="csrf-token" content="{{csrf_token()}}">
 	</head>
 	<body>
 		<div id="menu">
 			<div><h1>樹木情報可視化ツール</h1></div>
 			<ul>
 				@foreach($orchards as $i)
-					<li data-id="{{$i->id}}">{{$i->name}}</li>
+					<li data-id="{{$i->id}}">{{$i->name}}<div></div></li>
 				@endforeach
 				<li>新規作成
 					<form method="POST" enctype="multipart/form-data">
