@@ -15,4 +15,9 @@ class ApiController extends Controller
             'trees' => Tree::where('orchard_id', $orchard_id)->get(),
         ]);
     }
+    public function delete($orchard_id)
+    {
+        Orchard::find($orchard_id)->delete();
+        return responce();
+    }
 }

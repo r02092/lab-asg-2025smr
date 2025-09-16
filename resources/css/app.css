@@ -34,7 +34,18 @@ body {
 		scrollbar-color: #777 #ccc;
 		> li {
 			border-bottom: 2px solid #777;
-			padding: 1em 0.8em;
+			padding: 1rem 1.2em;
+			position: relative;
+			> div {
+				background: #c32 center no-repeat;
+				border-radius: 0.5rem;
+				cursor: pointer;
+				position: absolute;
+				top: calc(50% - 1rem);
+				right: 1rem;
+				width: 2rem;
+				height: 2rem;
+			}
 		}
 		> li.selected {
 			background: #fb8;
