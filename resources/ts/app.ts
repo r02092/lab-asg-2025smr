@@ -1,5 +1,5 @@
 import {icon} from "@fortawesome/fontawesome-svg-core";
-import {faMapLocationDot} from "@fortawesome/free-solid-svg-icons/faMapLocationDot";
+import {faLocationDot} from "@fortawesome/free-solid-svg-icons/faLocationDot";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons/faCirclePlus";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -13,7 +13,7 @@ type Tree = {
 	leaf_area: number;
 };
 for (let i = 0; i < 2; i++) {
-	const iconElem = icon([faMapLocationDot, faCirclePlus][i]).node[0];
+	const iconElem = icon([faLocationDot, faCirclePlus][i]).node[0];
 	iconElem.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 	iconElem.setAttribute("width", "1.1rem");
 	iconElem.setAttribute("height", "1rem");
