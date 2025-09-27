@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: npm i
+      - run: npm ci
       - run: npm i -g @google/clasp
       - run: npm run build-gas
       - run: |
