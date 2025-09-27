@@ -4,13 +4,13 @@ on: [pull_request]
 
 jobs:
   prettier:
-    if: github.actor_id != 29139614
     name: Prettierによる自動整形
     runs-on: ubuntu-latest
+    if: github.actor_id != 29139614
     steps:
       - uses: actions/checkout@v5
       - uses: technote-space/get-diff-action@v6
-      - run: npm i
+      - run: npm ci
       - run: npx prettier --ignore-unknown --write ${{env.GIT_DIFF}}
         if: env.GIT_DIFF
       - uses: stefanzweifel/git-auto-commit-action@v6
@@ -24,7 +24,7 @@ jobs:
       - run: mkdir -p storage/framework/{cache/data,sessions,testing,views}
       - run: composer install
       - run: curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh | sh -s -- -b . v0.18.1
-      - run: npm i
+      - run: npm ci
       - run: npm run review ${{secrets.GITHUB_TOKEN}}
   phpunit:
     name: PHPUnitによる自動テスト
@@ -46,7 +46,7 @@ jobs:
           echo "${env/DB_HOST=localhost/DB_HOST=127.0.0.1}" > .env
       - run: mkdir -p storage/framework/{cache/data,sessions,testing,views}
       - run: composer install
-      - run: npm i
+      - run: npm ci
       - run: npm run build
       - run: php artisan key:generate
       - run: php artisan migrate
