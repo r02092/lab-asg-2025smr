@@ -4,9 +4,9 @@ on: [pull_request]
 
 jobs:
   prettier:
-    if: github.actor_id != 29139614
     name: Prettierによる自動整形
     runs-on: ubuntu-latest
+    if: github.actor_id != 29139614
     steps:
       - uses: actions/checkout@v5
       - uses: technote-space/get-diff-action@v6
