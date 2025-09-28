@@ -18,6 +18,6 @@ class ApiController extends Controller
     public function delete($orchard_id)
     {
         Orchard::find($orchard_id)->delete();
-        return responce();
+        return response('');
     }
 }
