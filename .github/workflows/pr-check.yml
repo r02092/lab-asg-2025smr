@@ -14,7 +14,7 @@ jobs:
         if: env.GIT_DIFF
       - uses: stefanzweifel/git-auto-commit-action@v6
         with:
-          commit_author: ${{github.actor_id != 29139614 && 'github-actions[bot] <41898282+github-actions[bot]' || format('{0} <{1}+{0}', github.actor, github.actor_id)}}@users.noreply.github.com>
+          commit_author: ${{github.actor_id != 29139614 && format('{0} <{1}+{0}', github.actor, github.actor_id) || 'github-actions[bot] <41898282+github-actions[bot]'}}@users.noreply.github.com>
           commit_message: npm iとPrettierの実行結果を適用
   review:
     name: Reviewdogによる自動レビュー
