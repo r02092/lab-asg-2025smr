@@ -4,18 +4,18 @@ on: [pull_request]
 
 jobs:
   prettier:
-    name: Prettierによる自動整形
+    name: npm iとPrettierの実行
     runs-on: ubuntu-latest
-    if: github.actor_id != 29139614
     steps:
       - uses: actions/checkout@v5
       - uses: technote-space/get-diff-action@v6
-      - run: npm ci
+      - run: npm i
       - run: npx prettier --ignore-unknown --write ${{env.GIT_DIFF}}
         if: env.GIT_DIFF
       - uses: stefanzweifel/git-auto-commit-action@v6
         with:
-          commit_message: Prettierによる整形を適用
+          commit_author: ${{github.actor_id != 29139614 && format('{0} <{1}+{0}', github.actor, github.actor_id) || 'github-actions[bot] <41898282+github-actions[bot]'}}@users.noreply.github.com>
+          commit_message: npm iとPrettierの実行結果を適用
   review:
     name: Reviewdogによる自動レビュー
     runs-on: ubuntu-latest
