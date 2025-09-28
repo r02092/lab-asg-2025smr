@@ -151,6 +151,7 @@ for (const i of document.querySelectorAll("#menu > ul > li > div"))
 			});
 			parentElem.remove();
 			location.hash = "";
+			location.reload();
 		}
 	});
 document
