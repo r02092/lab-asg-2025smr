@@ -59,7 +59,7 @@ jobs:
   status:
     name: ステータス更新
     needs: [prettier, review, phpunit]
-    if: !cancelled()
+    if: ${{!cancelled()}}
     runs-on: ubuntu-latest
     steps:
       - run: |
