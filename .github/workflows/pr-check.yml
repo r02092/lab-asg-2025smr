@@ -63,4 +63,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{needs.prettier.outputs.commit_hash || github.sha}} -f state=${{contains(needs.*.result, "failure") && "failure" || "success"}} -f context=マージ許可
+          gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{needs.prettier.outputs.commit_hash || github.sha}} -f state=${{contains(needs.*.result, 'failure') && 'failure' || 'success'}} -f context=マージ許可
