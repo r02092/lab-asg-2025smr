@@ -9,6 +9,9 @@ on:
       - "gas/**"
       - "resources/ts/ci/gas.ts"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Google Apps Scriptをデプロイ
