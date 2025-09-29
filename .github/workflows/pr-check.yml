@@ -2,6 +2,11 @@ name: Pull Requestの自動確認
 
 on: [pull_request]
 
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+
 jobs:
   prettier:
     name: npm iとPrettierの実行
