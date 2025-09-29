@@ -8,8 +8,8 @@ permissions:
   statuses: write
 
 jobs:
-  prettier:
-    name: npm iとPrettierの実行
+  format:
+    name: npm iとESLint、Prettierの実行
     runs-on: ubuntu-latest
     outputs:
       commit_hash: ${{steps.commit.outputs.commit_hash}}
@@ -17,13 +17,16 @@ jobs:
       - uses: actions/checkout@v5
       - uses: technote-space/get-diff-action@v6
       - run: npm i
-      - run: npx prettier --ignore-unknown --write ${{env.GIT_DIFF}}
+      - run: npx eslint ${{env.GIT_DIFF}} --ext ts --fix
+        if: env.GIT_DIFF
+        continue-on-error: true
+      - run: npx prettier ${{env.GIT_DIFF}} --ignore-unknown --write
         if: env.GIT_DIFF
       - id: commit
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_author: ${{github.actor_id != 29139614 && format('{0} <{1}+{0}', github.actor, github.actor_id) || 'github-actions[bot] <41898282+github-actions[bot]'}}@users.noreply.github.com>
-          commit_message: npm iとPrettierの実行結果を適用
+          commit_message: npm iとESLint、Prettierの実行結果を適用
       - run: |
           gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{steps.commit.outputs.commit_hash || github.sha}} -f state=pending -f context=マージ許可
         env:
@@ -65,11 +68,11 @@ jobs:
       - run: composer test
   status:
     name: ステータス更新
-    needs: [prettier, review, phpunit]
+    needs: [format, review, phpunit]
     if: ${{!cancelled()}}
     runs-on: ubuntu-latest
     steps:
       - run: |
-          gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{needs.prettier.outputs.commit_hash || github.sha}} -f state=${{contains(needs.*.result, 'failure') && 'failure' || 'success'}} -f context=マージ許可
+          gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{needs.format.outputs.commit_hash || github.sha}} -f state=${{contains(needs.*.result, 'failure') && 'failure' || 'success'}} -f context=マージ許可
         env:
           GH_TOKEN: ${{github.token}}
