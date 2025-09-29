@@ -10,6 +10,8 @@
     "review": "tsx resources/ts/ci/reviewdog.ts"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.0.1",
+    "@fortawesome/free-solid-svg-icons": "^7.0.1",
     "maplibre-gl": "^5.7.1",
     "maplibre-gl-gsi-terrain": "^2.2.2"
   },

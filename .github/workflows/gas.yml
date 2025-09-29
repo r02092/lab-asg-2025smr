@@ -9,13 +9,16 @@ on:
       - "gas/**"
       - "resources/ts/ci/gas.ts"
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Google Apps Scriptをデプロイ
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: npm i
+      - run: npm ci
       - run: npm i -g @google/clasp
       - run: npm run build-gas
       - run: |
