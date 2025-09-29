@@ -38,7 +38,8 @@
     "vite": "^7.0.4"
   },
   "lint-staged": {
-    "*": "npx prettier --ignore-unknown --write"
+    "*": "npx prettier --ignore-unknown --write",
+    "*.ts": "npx eslint --fix"
   },
   "prettier": {
     "arrowParens": "avoid",
