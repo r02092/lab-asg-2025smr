@@ -18,9 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: npm ci
-      - run: npm i -g @google/clasp
-      - run: npm run build-gas
+      - run: npm i -g pnpm
+      - run: pnpm i
+      - run: pnpm i -g @google/clasp
+      - run: pnpm run build-gas
       - run: |
           cat << EOF > ~/.clasprc.json
           {

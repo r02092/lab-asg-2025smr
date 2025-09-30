@@ -8,22 +8,26 @@ permissions:
   statuses: write
 
 jobs:
-  prettier:
-    name: npm iとPrettierの実行
+  format:
+    name: ESLintとPrettierの実行
     runs-on: ubuntu-latest
     outputs:
       commit_hash: ${{steps.commit.outputs.commit_hash}}
     steps:
       - uses: actions/checkout@v5
       - uses: technote-space/get-diff-action@v6
-      - run: npm i
-      - run: npx prettier --ignore-unknown --write ${{env.GIT_DIFF}}
+      - run: npm i -g pnpm
+      - run: pnpm i
+      - run: pnpm exec eslint ${{env.GIT_DIFF}} --ext ts --fix
+        if: env.GIT_DIFF
+        continue-on-error: true
+      - run: pnpm exec prettier ${{env.GIT_DIFF}} --ignore-unknown --write
         if: env.GIT_DIFF
       - id: commit
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_author: ${{github.actor_id != 29139614 && format('{0} <{1}+{0}', github.actor, github.actor_id) || 'github-actions[bot] <41898282+github-actions[bot]'}}@users.noreply.github.com>
-          commit_message: npm iとPrettierの実行結果を適用
+          commit_message: ESLintとPrettierの実行結果を適用
       - run: |
           gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{steps.commit.outputs.commit_hash || github.sha}} -f state=pending -f context=マージ許可
         env:
@@ -36,8 +40,9 @@ jobs:
       - run: mkdir -p storage/framework/{cache/data,sessions,testing,views}
       - run: composer install
       - run: curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/fd59714416d6d9a1c0692d872e38e7f8448df4fc/install.sh | sh -s -- -b . v0.18.1
-      - run: npm ci
-      - run: npm run review ${{secrets.GITHUB_TOKEN}}
+      - run: npm i -g pnpm
+      - run: pnpm i
+      - run: pnpm run review ${{secrets.GITHUB_TOKEN}}
   phpunit:
     name: PHPUnitによる自動テスト
     runs-on: ubuntu-latest
@@ -58,18 +63,19 @@ jobs:
           echo "${env/DB_HOST=localhost/DB_HOST=127.0.0.1}" > .env
       - run: mkdir -p storage/framework/{cache/data,sessions,testing,views}
       - run: composer install
-      - run: npm ci
-      - run: npm run build
+      - run: npm i -g pnpm
+      - run: pnpm i
+      - run: pnpm run build
       - run: php artisan key:generate
       - run: php artisan migrate
       - run: composer test
   status:
     name: ステータス更新
-    needs: [prettier, review, phpunit]
+    needs: [format, review, phpunit]
     if: ${{!cancelled()}}
     runs-on: ubuntu-latest
     steps:
       - run: |
-          gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{needs.prettier.outputs.commit_hash || github.sha}} -f state=${{contains(needs.*.result, 'failure') && 'failure' || 'success'}} -f context=マージ許可
+          gh api -X POST -H 'Accept: application/vnd.github+json' /repos/${{github.repository}}/statuses/${{needs.format.outputs.commit_hash || github.sha}} -f state=${{contains(needs.*.result, 'failure') && 'failure' || 'success'}} -f context=マージ許可
         env:
           GH_TOKEN: ${{github.token}}

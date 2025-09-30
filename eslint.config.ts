@@ -49,5 +49,5 @@ export default defineConfig([
 		language: "css/css",
 		extends: ["css/recommended"],
 	},
-	globalIgnores(["gas/dist/main.js", "package-lock.json", "public/build/*"]),
+	globalIgnores(["gas/dist/main.js", "public/build/*"]),
 ]);

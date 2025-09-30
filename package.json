@@ -38,7 +38,8 @@
     "vite": "^7.0.4"
   },
   "lint-staged": {
-    "*": "npx prettier --ignore-unknown --write"
+    "*": "pnpm exec prettier --ignore-unknown --write",
+    "*.ts": "pnpm exec eslint --fix"
   },
   "prettier": {
     "arrowParens": "avoid",
