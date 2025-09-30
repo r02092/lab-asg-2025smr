@@ -20,7 +20,10 @@ jobs:
       - uses: actions/checkout@v5
       - run: npm i -g pnpm
       - run: pnpm i
-      - run: pnpm setup
+      - run: |
+          PNPM_HOME=/home/runner/.local/share/pnpm
+          echo PNPM_HOME=$PNPM_HOME >> $GITHUB_ENV
+          echo $PNPM_HOME >> $GITHUB_PATH
       - run: pnpm i -g @google/clasp
       - run: pnpm run build-gas
       - run: |
