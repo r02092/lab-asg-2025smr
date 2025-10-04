@@ -494,6 +494,7 @@ function drawOrchard(type: number, coordinates: GeoJSON.Position[]) {
 		);
 		if (!type) map.setLayoutProperty("layer_text", "visibility", "none");
 	}
+	map.redraw();
 }
 function drawNewOrchard(coordinates: GeoJSON.Position[]) {
 	for (let i = 0; i < 3; i++) drawOrchard(i, coordinates);
