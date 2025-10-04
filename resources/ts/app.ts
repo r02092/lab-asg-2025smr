@@ -129,11 +129,14 @@ for (const i of document.querySelectorAll("#menu > ul > li")) {
 			j.className = j === i ? "selected" : "";
 	});
 }
+let isNewMode = false;
 for (const i of document.querySelectorAll("#menu > ul > li[data-id]"))
 	i.addEventListener("click", viewOrchard);
 document
 	.querySelector("#menu > ul > li:last-child")
-	?.addEventListener("click", () => changeMode(true));
+	?.addEventListener("click", () => {
+		if (isNewMode) changeMode(true);
+	});
 for (const i of document.querySelectorAll("#menu > ul > li > div"))
 	i.addEventListener("click", async () => {
 		const parentElem = i.parentElement;
@@ -165,6 +168,8 @@ let newCoordinates: GeoJSON.Position[] = [];
 for (const i of document.querySelectorAll(".latin_digit > div > *"))
 	i.addEventListener("change", () => drawNewOrchard(newCoordinates));
 function changeMode(isNew: boolean) {
+	if (isNew === isNewMode) return;
+	isNewMode = isNew;
 	drawNewOrchard([]);
 	if (isNew) {
 		map.setLayoutProperty("layer_trees", "visibility", "none");
