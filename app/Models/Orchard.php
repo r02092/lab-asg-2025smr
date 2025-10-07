@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Orchard extends Model
 {
     protected $casts = [
-        'orchard_id' => 'int',
+        'id' => 'int',
         'name' => 'string',
         'latin_num' => 'int',
         'digit_num' => 'int',
@@ -20,7 +20,7 @@ class Orchard extends Model
         'lng3' => 'int',
         'lat3' => 'int',
     ];
-    protected $guarded = ['orchard_id'];
+    protected $guarded = ['id'];
     public $timestamps = false;
     public function tree()
     {

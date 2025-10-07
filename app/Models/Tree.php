@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Tree extends Model
 {
     protected $casts = [
-        'tree_id' => 'int',
+        'id' => 'int',
         'orchard_id' => 'int',
         'latin' => 'int',
         'digit' => 'int',
         'leaf_num' => 'int',
         'leaf_area' => 'real',
     ];
-    protected $guarded = ['tree_id'];
+    protected $guarded = ['id'];
     public $timestamps = false;
     public function orchard()
     {
