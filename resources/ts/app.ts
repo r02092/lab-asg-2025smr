@@ -110,6 +110,7 @@ map.addControl(
 					}
 					paintTrees();
 				});
+				if (i === "葉数") button.dataset.active = "true";
 				div.appendChild(button);
 			}
 			return div;
