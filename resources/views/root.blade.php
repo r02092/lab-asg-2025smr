@@ -38,13 +38,11 @@
 								</div>
 							</li>
 							<li>
-								右の地図上で園地の四隅を<br>
-								クリックしてください
+								右の地図上で園地の四隅をクリックしてください
 								<input type="hidden" name="coordinates">
 							</li>
 							<li>
-								樹木のデータを<br>
-								アップロードしてください
+								樹木のデータを選択してください
 								<input type="file" name="trees_data" accept=".csv,text/csv" required>
 							</li>
 							<li>
